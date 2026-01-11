@@ -1,4 +1,4 @@
-import {Role} from './role.model';
+import {Role} from './role';
 
 export interface User {
   userId?: number;

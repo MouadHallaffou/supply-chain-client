@@ -1,0 +1,82 @@
+Angular 19 - Roadmap Essentiel
+1. Fondamentaux TypeScript
+
+Types et Interfaces
+Classes et Héritage
+Decorators
+Async/Await et Promises
+Génériques
+
+2. Core Concepts Angular
+
+Composants (Standalone)
+Templates et Data Binding
+Directives (structurelles et attributs et composants)
+Pipes
+Modules vs Standalone
+
+3. Signals (Angular 19)
+
+signal()
+computed()
+effect()
+Signal inputs/outputs
+
+4. Dependency Injection
+
+inject() function
+providedIn
+Providers hierarchy
+
+5. Routing
+
+Routes configuration
+RouterLink / RouterOutlet
+Route guards
+Lazy loading
+
+6. Forms
+
+Reactive Forms (FormGroup, FormControl, FormBuilder)
+Template-driven Forms
+Validators
+Custom Validators
+
+7. HTTP & Services
+
+HttpClient
+Observables (RxJS)
+Operators (map, tap, catchError, switchMap)
+Interceptors
+
+8. State Management
+
+BehaviorSubject
+Signals
+Services pour le state
+
+9. Lifecycle Hooks
+
+ngOnInit
+ngOnDestroy
+ngOnChanges
+ngAfterViewInit
+
+10. Best Practices
+
+Project structure
+Naming conventions
+Error handling
+Performance (trackBy, OnPush)
+Accessibility
+
+11. Testing (Optionnel début)
+
+Unit tests (Jasmine/Karma)
+Component testing
+
+12. Build & Deploy
+
+Angular CLI commands
+Environments
+Production build

@@ -1,0 +1,198 @@
+<div class="container-fluid mt-4">
+  <div class="card shadow-sm">
+    <!-- Header -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">
+        <i class="bi bi-box-seam me-2"></i>
+        Gestion des Matières Premières
+      </h3>
+      <button class="btn btn-light" (click)="onAdd()">
+        <i class="bi bi-plus-circle me-1"></i>
+        Nouvelle Matière Première
+      </button>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card-body">
+      <div class="row mb-4">
+        <div class="col-md-5">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Rechercher par nom..."
+              [formControl]="searchControl">
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <select class="form-select" [formControl]="stockFilter" (change)="onFilterChange()">
+            <option value="all">Tous les stocks</option>
+            <option value="low">Stock critique</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <button class="btn btn-outline-secondary w-100" (click)="clearSearch()">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      @if (error()) {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ error() }}
+          <button type="button" class="btn-close" (click)="error.set(null)"></button>
+        </div>
+      }
+
+      @if (success()) {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          {{ success() }}
+          <button type="button" class="btn-close" (click)="success.set(null)"></button>
+        </div>
+      }
+
+      <!-- Chargement -->
+      @if (loading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          <p class="mt-2">Chargement...</p>
+        </div>
+      }
+
+      <!-- Table -->
+      @if (!loading() && matieresPremieres().length > 0) {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+              <th>Nom</th>
+              <th>Stock actuel</th>
+              <th>Stock minimum</th>
+              <th>Unité</th>
+              <th>Statut</th>
+              <th class="text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (matiere of matieresPremieres(); track matiere.matierePremiereId) {
+                <tr>
+                  <td class="fw-semibold">{{ matiere.name }}</td>
+                  <td>
+                    <span class="badge"
+                          [class.bg-danger]="isStockLow(matiere)"
+                          [class.bg-success]="!isStockLow(matiere)">
+                      {{ matiere.stockQuantity }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge bg-info text-dark">
+                      {{ matiere.stockMinimum }}
+                    </span>
+                  </td>
+                  <td>{{ matiere.unit }}</td>
+                  <td>
+                    @if (isStockLow(matiere)) {
+                      <span class="badge bg-danger">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        Stock critique
+                      </span>
+                    } @else {
+                      <span class="badge bg-success">
+                        <i class="bi bi-check-circle me-1"></i>
+                        OK
+                      </span>
+                    }
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button class="btn btn-outline-info" (click)="onView(matiere)" title="Voir">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button class="btn btn-outline-primary" (click)="onEdit(matiere)" title="Modifier">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button class="btn btn-outline-danger" (click)="onDelete(matiere)" title="Supprimer">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav class="mt-3">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" [class.disabled]="currentPage() === 0">
+              <button class="page-link" (click)="onPageChange(currentPage() - 1)">Précédent</button>
+            </li>
+            @for (page of getPageNumbers(); track page) {
+              <li class="page-item" [class.active]="page === currentPage()">
+                <button class="page-link" (click)="onPageChange(page)">{{ page + 1 }}</button>
+              </li>
+            }
+            <li class="page-item" [class.disabled]="currentPage() === totalPages() - 1">
+              <button class="page-link" (click)="onPageChange(currentPage() + 1)">Suivant</button>
+            </li>
+          </ul>
+        </nav>
+
+        <p class="text-center text-muted">
+          Page {{ currentPage() + 1 }} sur {{ totalPages() }} - Total: {{ totalElements() }} élément(s)
+        </p>
+      }
+
+      <!-- État vide -->
+      @if (!loading() && matieresPremieres().length === 0) {
+        <div class="text-center py-5">
+          <i class="bi bi-inbox display-1 text-muted"></i>
+          <h4 class="mt-3">Aucune matière première trouvée</h4>
+          <button class="btn btn-success mt-3" (click)="onAdd()">
+            <i class="bi bi-plus-circle me-1"></i>
+            Créer une matière première
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Modal de suppression -->
+@if (showDeleteModal()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Confirmer la suppression
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer <strong>{{ selectedMatierePremiere()?.name }}</strong> ?</p>
+          <p class="text-muted"><small>Cette action est irréversible.</small></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Annuler</button>
+          <button type="button" class="btn btn-danger" (click)="confirmDelete()">
+            <i class="bi bi-trash me-2"></i>Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

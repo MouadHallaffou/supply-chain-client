@@ -1,0 +1,196 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h3 class="mb-0">
+            <i class="bi bi-box-seam me-2"></i>
+            {{ isEditMode() ? 'Modifier la matière première' : 'Nouvelle matière première' }}
+          </h3>
+        </div>
+
+        <div class="card-body">
+          @if (error()) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ error() }}
+              <button type="button" class="btn-close" (click)="error.set(null)"></button>
+            </div>
+          }
+
+          @if (success()) {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              {{ success() }}
+              <button type="button" class="btn-close" (click)="success.set(null)"></button>
+            </div>
+          }
+
+          @if (loading()) {
+            <div class="text-center py-5">
+              <div class="spinner-border text-success" role="status">
+                <span class="visually-hidden">Chargement...</span>
+              </div>
+              <p class="mt-2">Chargement en cours...</p>
+            </div>
+          } @else {
+            <form [formGroup]="matierePremiereForm" (ngSubmit)="onSubmit()">
+              <!-- Nom -->
+              <div class="mb-3">
+                <label for="name" class="form-label">Nom de la matière première <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  formControlName="name"
+                  [class.is-invalid]="name.invalid && name.touched"
+                  placeholder="Ex: Farine de blé">
+                @if (name.invalid && name.touched) {
+                  <div class="invalid-feedback">
+                    @if (name.errors?.['required']) {
+                      <div>Le nom est requis</div>
+                    }
+                    @if (name.errors?.['minlength']) {
+                      <div>Minimum 2 caractères</div>
+                    }
+                    @if (name.errors?.['maxlength']) {
+                      <div>Maximum 100 caractères</div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Stock minimum et Quantité en stock -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="stockMinimum" class="form-label">Stock minimum <span class="text-danger">*</span></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="stockMinimum"
+                    formControlName="stockMinimum"
+                    [class.is-invalid]="stockMinimum.invalid && stockMinimum.touched"
+                    min="0"
+                    placeholder="0">
+                  @if (stockMinimum.invalid && stockMinimum.touched) {
+                    <div class="invalid-feedback">
+                      @if (stockMinimum.errors?.['required']) {
+                        <div>Le stock minimum est requis</div>
+                      }
+                      @if (stockMinimum.errors?.['min']) {
+                        <div>Le stock minimum doit être positif</div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="stockQuantity" class="form-label">Quantité en stock <span class="text-danger">*</span></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="stockQuantity"
+                    formControlName="stockQuantity"
+                    [class.is-invalid]="stockQuantity.invalid && stockQuantity.touched"
+                    min="0"
+                    placeholder="0">
+                  @if (stockQuantity.invalid && stockQuantity.touched) {
+                    <div class="invalid-feedback">
+                      @if (stockQuantity.errors?.['required']) {
+                        <div>La quantité est requise</div>
+                      }
+                      @if (stockQuantity.errors?.['min']) {
+                        <div>La quantité doit être positive</div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Unité de mesure -->
+              <div class="mb-3">
+                <label for="unit" class="form-label">Unité de mesure <span class="text-danger">*</span></label>
+                <select
+                  class="form-select"
+                  id="unit"
+                  formControlName="unit"
+                  [class.is-invalid]="unit.invalid && unit.touched">
+                  <option value="">Sélectionnez une unité</option>
+                  <option value="kg">Kilogramme (kg)</option>
+                  <option value="g">Gramme (g)</option>
+                  <option value="l">Litre (l)</option>
+                  <option value="ml">Millilitre (ml)</option>
+                  <option value="unité">Unité</option>
+                  <option value="boîte">Boîte</option>
+                  <option value="carton">Carton</option>
+                  <option value="palette">Palette</option>
+                </select>
+                @if (unit.invalid && unit.touched) {
+                  <div class="invalid-feedback">
+                    @if (unit.errors?.['required']) {
+                      <div>L'unité est requise</div>
+                    }
+                  </div>
+                }
+                <small class="text-muted">Sélectionnez l'unité de mesure appropriée</small>
+              </div>
+
+              <!-- Fournisseurs -->
+              <div class="mb-3">
+                <label class="form-label">Fournisseurs</label>
+                <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                  @if (fournisseurs().length > 0) {
+                    @for (fournisseur of fournisseurs(); track fournisseur.fournisseurId) {
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          [id]="'fournisseur-' + fournisseur.fournisseurId"
+                          [checked]="isFournisseurSelected(fournisseur.fournisseurId!)"
+                          (change)="onFournisseurChange($event, fournisseur.fournisseurId!)">
+                        <label class="form-check-label" [for]="'fournisseur-' + fournisseur.fournisseurId">
+                          {{ fournisseur.name }}
+                          <small class="text-muted ms-2">(Délai: {{ fournisseur.leadTimeDays }} jours)</small>
+                        </label>
+                      </div>
+                    }
+                  } @else {
+                    <p class="text-muted mb-0">
+                      <i class="bi bi-info-circle me-1"></i>
+                      Aucun fournisseur actif disponible
+                    </p>
+                  }
+                </div>
+                <small class="text-muted">Sélectionnez un ou plusieurs fournisseurs pour cette matière première</small>
+              </div>
+
+              <!-- Boutons d'action -->
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  (click)="onCancel()"
+                  [disabled]="loading()">
+                  <i class="bi bi-x-circle me-1"></i>
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-success"
+                  [disabled]="matierePremiereForm.invalid || loading()">
+                  @if (loading()) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  }
+                  <i class="bi bi-check-circle me-1"></i>
+                  {{ isEditMode() ? 'Mettre à jour' : 'Créer' }}
+                </button>
+              </div>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

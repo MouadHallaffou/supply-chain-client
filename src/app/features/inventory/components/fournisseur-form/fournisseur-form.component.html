@@ -1,0 +1,216 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="bi bi-truck me-2"></i>
+            {{ isEditMode() ? 'Modifier le fournisseur' : 'Nouveau fournisseur' }}
+          </h3>
+        </div>
+
+        <div class="card-body">
+          @if (error()) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ error() }}
+              <button type="button" class="btn-close" (click)="error.set(null)"></button>
+            </div>
+          }
+
+          @if (success()) {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              {{ success() }}
+              <button type="button" class="btn-close" (click)="success.set(null)"></button>
+            </div>
+          }
+
+          @if (loading()) {
+            <div class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
+              </div>
+              <p class="mt-2">Chargement en cours...</p>
+            </div>
+          } @else {
+            <form [formGroup]="fournisseurForm" (ngSubmit)="onSubmit()">
+              <!-- Nom -->
+              <div class="mb-3">
+                <label for="name" class="form-label">Nom du fournisseur <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  formControlName="name"
+                  [class.is-invalid]="name.invalid && name.touched"
+                  placeholder="Ex: Allianz">
+                @if (name.invalid && name.touched) {
+                  <div class="invalid-feedback">
+                    @if (name.errors?.['required']) {
+                      <div>Le nom est requis</div>
+                    }
+                    @if (name.errors?.['minlength']) {
+                      <div>Minimum 2 caractères</div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="contactEmail" class="form-label">Email de contact <span class="text-danger">*</span></label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="contactEmail"
+                  formControlName="contactEmail"
+                  [class.is-invalid]="contactEmail.invalid && contactEmail.touched"
+                  placeholder="contact@example.com">
+                @if (contactEmail.invalid && contactEmail.touched) {
+                  <div class="invalid-feedback">
+                    @if (contactEmail.errors?.['required']) {
+                      <div>L'email est requis</div>
+                    }
+                    @if (contactEmail.errors?.['email']) {
+                      <div>Email invalide</div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Téléphone -->
+              <div class="mb-3">
+                <label for="phoneNumber" class="form-label">Numéro de téléphone <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="phoneNumber"
+                  formControlName="phoneNumber"
+                  [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
+                  placeholder="0612345678">
+                @if (phoneNumber.invalid && phoneNumber.touched) {
+                  <div class="invalid-feedback">
+                    @if (phoneNumber.errors?.['required']) {
+                      <div>Le téléphone est requis</div>
+                    }
+                    @if (phoneNumber.errors?.['pattern']) {
+                      <div>Format invalide (10 chiffres)</div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Adresse -->
+              <div class="mb-3">
+                <label for="address" class="form-label">Adresse <span class="text-danger">*</span></label>
+                <textarea
+                  class="form-control"
+                  id="address"
+                  formControlName="address"
+                  [class.is-invalid]="address.invalid && address.touched"
+                  rows="3"
+                  placeholder="10 rue de YC, YSF"></textarea>
+                @if (address.invalid && address.touched) {
+                  <div class="invalid-feedback">
+                    @if (address.errors?.['required']) {
+                      <div>L'adresse est requise</div>
+                    }
+                    @if (address.errors?.['minlength']) {
+                      <div>Minimum 5 caractères</div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Délai et Note -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="leadTimeDays" class="form-label">Délai de livraison (jours) <span class="text-danger">*</span></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="leadTimeDays"
+                    formControlName="leadTimeDays"
+                    [class.is-invalid]="leadTimeDays.invalid && leadTimeDays.touched"
+                    min="0"
+                    placeholder="0">
+                  @if (leadTimeDays.invalid && leadTimeDays.touched) {
+                    <div class="invalid-feedback">
+                      @if (leadTimeDays.errors?.['required']) {
+                        <div>Le délai est requis</div>
+                      }
+                      @if (leadTimeDays.errors?.['min']) {
+                        <div>Le délai doit être positif</div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="rating" class="form-label">Note <span class="text-danger">*</span></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="rating"
+                    formControlName="rating"
+                    [class.is-invalid]="rating.invalid && rating.touched"
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    placeholder="0.0">
+                  @if (rating.invalid && rating.touched) {
+                    <div class="invalid-feedback">
+                      @if (rating.errors?.['required']) {
+                        <div>La note est requise</div>
+                      }
+                      @if (rating.errors?.['min'] || rating.errors?.['max']) {
+                        <div>Note entre 0 et 5</div>
+                      }
+                    </div>
+                  }
+                  <small class="text-muted">Entre 0 et 5</small>
+                </div>
+              </div>
+
+              <!-- Statut actif -->
+              <div class="mb-3">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="isActive"
+                    formControlName="isActive">
+                  <label class="form-check-label" for="isActive">
+                    Fournisseur actif
+                  </label>
+                </div>
+              </div>
+
+              <!-- Boutons d'action -->
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  (click)="onCancel()">
+                  <i class="bi bi-x-circle me-1"></i>
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="fournisseurForm.invalid || loading()">
+                  @if (loading()) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  }
+                  <i class="bi bi-check-circle me-1"></i>
+                  {{ isEditMode() ? 'Mettre à jour' : 'Créer' }}
+                </button>
+              </div>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

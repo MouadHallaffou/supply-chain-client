@@ -1,0 +1,168 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            {{ isEditMode() ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}
+          </h3>
+        </div>
+
+        <div class="card-body">
+          @if (error()) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ error() }}
+              <button type="button" class="btn-close" (click)="error.set(null)"></button>
+            </div>
+          }
+
+          @if (loading()) {
+            <div class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
+              </div>
+              <p class="mt-2">Chargement en cours...</p>
+            </div>
+          } @else {
+            <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+              <!-- Prénom et Nom -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="firstName" class="form-label">Prénom <span class="text-danger">*</span></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="firstName"
+                    formControlName="firstName"
+                    [class.is-invalid]="firstName.invalid && firstName.touched"
+                    placeholder="Entrez le prénom">
+                  <div class="invalid-feedback" *ngIf="firstName.invalid && firstName.touched">
+                    <div *ngIf="firstName.errors?.['required']">Le prénom est requis</div>
+                    <div *ngIf="firstName.errors?.['minlength']">Minimum 2 caractères</div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="lastName" class="form-label">Nom <span class="text-danger">*</span></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="lastName"
+                    formControlName="lastName"
+                    [class.is-invalid]="lastName.invalid && lastName.touched"
+                    placeholder="Entrez le nom">
+                  <div class="invalid-feedback" *ngIf="lastName.invalid && lastName.touched">
+                    <div *ngIf="lastName.errors?.['required']">Le nom est requis</div>
+                    <div *ngIf="lastName.errors?.['minlength']">Minimum 2 caractères</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  formControlName="email"
+                  [class.is-invalid]="email.invalid && email.touched"
+                  placeholder="exemple@email.com">
+                <div class="invalid-feedback" *ngIf="email.invalid && email.touched">
+                  <div *ngIf="email.errors?.['required']">L'email est requis</div>
+                  <div *ngIf="email.errors?.['email']">Email invalide</div>
+                </div>
+              </div>
+
+              <!-- Mot de passe -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="password" class="form-label">
+                    Mot de passe
+                    @if (!isEditMode()) {
+                      <span class="text-danger">*</span>
+                    } @else {
+                      <small class="text-muted"> </small>
+                    }
+                  </label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    formControlName="password"
+                    [class.is-invalid]="password.invalid && password.touched"
+                    placeholder="••••••••">
+                  <div class="invalid-feedback" *ngIf="password.invalid && password.touched">
+                    <div *ngIf="password.errors?.['required']">Le mot de passe est requis</div>
+                    <div *ngIf="password.errors?.['minlength']">Minimum 6 caractères</div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="confirmPassword" class="form-label">
+                    Confirmer le mot de passe
+                    @if (!isEditMode()) {
+                      <span class="text-danger">*</span>
+                    }
+                  </label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="confirmPassword"
+                    formControlName="confirmPassword"
+                    [class.is-invalid]="(confirmPassword.invalid && confirmPassword.touched) ||
+                                       (userForm.errors?.['passwordMismatch'] && confirmPassword.touched)"
+                    placeholder="••••••••">
+                  <div class="invalid-feedback"
+                       *ngIf="userForm.errors?.['passwordMismatch'] && confirmPassword.touched">
+                    Les mots de passe ne correspondent pas
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rôle -->
+              <div class="mb-3">
+                <label for="roleId" class="form-label">Rôle <span class="text-danger">*</span></label>
+                <select
+                  class="form-select"
+                  id="roleId"
+                  formControlName="roleId"
+                  [class.is-invalid]="roleId.invalid && roleId.touched">
+                  <option [value]="null" disabled>Sélectionnez un rôle</option>
+                  @for (role of roles(); track role.roleId) {
+                    <option [value]="role.roleId">{{ role.name }}</option>
+                  }
+                </select>
+                <div class="invalid-feedback" *ngIf="roleId.invalid && roleId.touched">
+                  Le rôle est requis
+                </div>
+              </div>
+
+              <!-- Boutons d'action -->
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  (click)="onCancel()">
+                  <i class="bi bi-x-circle me-1"></i>
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="userForm.invalid || loading()">
+                  @if (loading()) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  }
+                  <i class="bi bi-check-circle me-1"></i>
+                  {{ isEditMode() ? 'Mettre à jour' : 'Créer' }}
+                </button>
+              </div>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -83,7 +83,7 @@
                     @if (!isEditMode()) {
                       <span class="text-danger">*</span>
                     } @else {
-                      <small class="text-muted">(laisser vide pour ne pas changer)</small>
+                      <small class="text-muted"> </small>
                     }
                   </label>
                   <input
@@ -130,26 +130,12 @@
                   formControlName="roleId"
                   [class.is-invalid]="roleId.invalid && roleId.touched">
                   <option [value]="null" disabled>Sélectionnez un rôle</option>
-                  @for (role of roles(); track role.id) {
-                    <option [value]="role.id">{{ role.name }}</option>
+                  @for (role of roles(); track role.roleId) {
+                    <option [value]="role.roleId">{{ role.name }}</option>
                   }
                 </select>
                 <div class="invalid-feedback" *ngIf="roleId.invalid && roleId.touched">
                   Le rôle est requis
-                </div>
-              </div>
-
-              <!-- Statut actif -->
-              <div class="mb-3">
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="isActive"
-                    formControlName="isActive">
-                  <label class="form-check-label" for="isActive">
-                    Utilisateur actif
-                  </label>
                 </div>
               </div>
 

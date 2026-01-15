@@ -6,10 +6,6 @@
         Gestion des Rôles
       </h3>
       <div>
-        <button class="btn btn-light btn-sm me-2" (click)="backToUsers()">
-          <i class="bi bi-arrow-left me-1"></i>
-          Retour aux utilisateurs
-        </button>
         <button class="btn btn-success" (click)="createRole()">
           <i class="bi bi-plus-circle me-1"></i>
           Nouveau Rôle
@@ -47,10 +43,10 @@
             </tr>
             </thead>
             <tbody>
-              @for (role of roles(); track role.id) {
+              @for (role of roles(); track role.roleId) {
                 <tr>
                   <td>
-                    <span class="badge bg-secondary">{{ role.id }}</span>
+                    <span class="badge bg-secondary">{{ role.roleId }}</span>
                   </td>
                   <td>
                     <strong>{{ role.name }}</strong>
@@ -74,7 +70,7 @@
                       </button>
                       <button
                         class="btn btn-outline-danger"
-                        (click)="deleteRole(role.id!)"
+                        (click)="deleteRole(role.roleId!)"
                         title="Supprimer">
                         <i class="bi bi-trash"></i>
                       </button>

@@ -45,7 +45,7 @@ export class RoleListComponent implements OnInit {
   }
 
   editRole(role: Role): void {
-    this.router.navigate(['/user-management/roles', role.id, 'edit']);
+    this.router.navigate(['/user-management/roles', role.roleId, 'edit']);
   }
 
   deleteRole(id: number): void {

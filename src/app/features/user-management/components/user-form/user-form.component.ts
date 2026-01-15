@@ -41,7 +41,8 @@ export class UserFormComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       roleId: [null, Validators.required],
-      isActive: [true]
+      isActive: [true],
+      isDeleted: [false]
     }, {
       validators: this.passwordMatchValidator
     });
@@ -57,6 +58,9 @@ export class UserFormComponent implements OnInit {
       this.userForm.get('confirmPassword')?.clearValidators();
       this.userForm.get('password')?.updateValueAndValidity();
       this.userForm.get('confirmPassword')?.updateValueAndValidity();
+      this.userForm.get('roleId')?.clearValidators();
+      this.userForm.get('isActive')?.clearValidators();
+      this.userForm.get('isActive')?.updateValueAndValidity();
     }
   }
 
@@ -69,7 +73,8 @@ export class UserFormComponent implements OnInit {
           lastName: user.lastName,
           email: user.email,
           roleId: user.roleId,
-          isActive: user.isActive
+          isActive: user.isActive,
+          isDeleted: user.isDeleted
         });
         this.loading.set(false);
       },

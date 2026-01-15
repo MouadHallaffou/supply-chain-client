@@ -19,7 +19,7 @@ export class UserListComponent implements OnInit {
   private userService = inject(UserService);
   private roleService = inject(RoleService);
   private fb = inject(FormBuilder);
-  router = inject(Router); // Public pour l'utiliser dans le template
+  router = inject(Router);
 
   users = signal<User[]>([]);
   roles = signal<Role[]>([]);
@@ -163,7 +163,7 @@ export class UserListComponent implements OnInit {
   }
 
   getRoleName(roleId: number): string {
-    const role = this.roles().find(r => r.id === roleId);
+    const role = this.roles().find(r => r.roleId === roleId);
     return role ? role.name : 'N/A';
   }
 }

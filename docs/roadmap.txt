@@ -11,7 +11,7 @@ Génériques
 
 Composants (Standalone)
 Templates et Data Binding
-Directives (structurelles et attributs)
+Directives (structurelles et attributs et composants)
 Pipes
 Modules vs Standalone
 

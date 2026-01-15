@@ -1,1 +1,228 @@
-<p>fournisseur-list works!</p>
+<div class="container-fluid mt-4">
+  <div class="card shadow-sm">
+
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">
+        <i class="bi bi-truck me-2"></i>
+        Gestion des Fournisseurs
+      </h3>
+      <div>
+        <button class="btn btn-success" (click)="onAdd()">
+          <i class="bi bi-plus-circle me-1"></i>
+          Nouveau Fournisseur
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Rechercher par nom...">
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+          <select class="form-select">
+            <option [value]="null">Tous les statuts</option>
+            <option [value]="true">Actifs</option>
+            <option [value]="false">Inactifs</option>
+          </select>
+        </div>
+
+        <div class="col-md-3 mb-3">
+          <select class="form-select" [formControl]="sortControl" (change)="onSortChange()">
+            <option value="name">Nom (A-Z)</option>
+            <option value="rating">Note</option>
+            <option value="leadTimeDays">Délai de livraison</option>
+          </select>
+        </div>
+
+        <div class="col-md-2 mb-3">
+          <button class="btn btn-outline-secondary w-100">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages d'erreur -->
+      @if (error()) {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ error() }}
+          <button type="button" class="btn-close" (click)="error.set(null)"></button>
+        </div>
+      }
+
+      @if (success()) {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          {{ success() }}
+          <button type="button" class="btn-close" (click)="success.set(null)"></button>
+        </div>
+      }
+
+      <!-- Chargement -->
+      @if (loading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          <p class="mt-2">Chargement des fournisseurs...</p>
+        </div>
+      }
+
+      <!-- Table des fournisseurs -->
+      @if (!loading() && fournisseurs().length > 0) {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 15%">Nom</th>
+                <th style="width: 20%">Email</th>
+                <th style="width: 12%">Téléphone</th>
+                <th style="width: 20%">Adresse</th>
+                <th style="width: 8%">Délai</th>
+                <th style="width: 8%">Note</th>
+                <th style="width: 10%">Statut</th>
+                <th style="width: 7%" class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fournisseur of fournisseurs(); track fournisseur.fournisseurId) {
+                <tr>
+                  <td class="fw-semibold">
+                    {{ fournisseur.name }}
+                  </td>
+                  <td>
+                    <small>{{ fournisseur.contactEmail }}</small>
+                  </td>
+                  <td>
+                    {{ fournisseur.phoneNumber }}
+                  </td>
+                  <td>
+                    <small>{{ fournisseur.address }}</small>
+                  </td>
+                  <td>
+                    <span class="badge bg-info text-dark">
+                      {{ fournisseur.leadTimeDays }} jours
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge bg-warning text-dark">
+                      {{ fournisseur.rating }}/5
+                    </span>
+                  </td>
+                  <td>
+                    @if (fournisseur.isActive) {
+                      <span class="badge bg-success">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Actif
+                      </span>
+                    } @else {
+                      <span class="badge bg-warning text-dark">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Inactif
+                      </span>
+                    }
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button
+                        class="btn btn-outline-info"
+                        (click)="onView(fournisseur)"
+                        title="Voir les détails">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button
+                        class="btn btn-outline-primary"
+                        (click)="onEdit(fournisseur)"
+                        title="Modifier">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        class="btn btn-outline-danger"
+                        (click)="onDelete(fournisseur)"
+                        title="Supprimer">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-3 d-flex justify-content-between align-items-center">
+          <p class="text-muted mb-0">
+            <i class="bi bi-info-circle me-1"></i>
+            Affichage de <strong>{{ fournisseurs().length }}</strong> fournisseur(s)
+            sur <strong>{{ totalItems() }}</strong> au total
+          </p>
+        </div>
+      }
+
+      <!-- État vide -->
+      @if (!loading() && fournisseurs().length === 0) {
+        <div class="text-center py-5">
+          <i class="bi bi-inbox display-1 text-muted"></i>
+          <h4 class="mt-3">Aucun fournisseur trouvé</h4>
+          <p class="text-muted">
+            @if (searchControl.value) {
+              Essayez de modifier vos critères de recherche
+            } @else {
+              Commencez par créer votre premier fournisseur
+            }
+          </p>
+          <button class="btn btn-primary mt-3" (click)="onAdd()">
+            <i class="bi bi-plus-circle me-1"></i>
+            Créer un fournisseur
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+@if (showDeleteModal()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Confirmer la suppression
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">
+            Êtes-vous sûr de vouloir supprimer le fournisseur
+            <strong>{{ selectedFournisseur()?.name }}</strong> ?
+          </p>
+          <p class="text-muted mt-2 mb-0">
+            <small>Cette action est irréversible.</small>
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">
+            Annuler
+          </button>
+          <button type="button" class="btn btn-danger" (click)="confirmDelete()">
+            <i class="bi bi-trash me-2"></i>
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

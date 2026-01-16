@@ -1,11 +1,14 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { AuthGuard } from './core/guards/auth.guard';
+import { UnauthorizedComponent } from './core/components/unauthorized/unauthorized.component';
 
 export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -19,14 +22,21 @@ export const routes: Routes = [
       {
         path: 'user-management',
         loadChildren: () => import('./features/user-management/user-management.routes')
-          .then(m => m.USER_MANAGEMENT_ROUTES)
+          .then(m => m.USER_MANAGEMENT_ROUTES),
+        canActivate: [AuthGuard],
+        data: { roles: ['admin', 'ADMIN'] } // Require admin role
       },
       {
         path: 'inventory',
         loadChildren: () => import('./features/inventory/inventory.routes')
-          .then(m => m.INVENTORY_ROUTES)
+          .then(m => m.INVENTORY_ROUTES),
+        canActivate: [AuthGuard]
       }
     ]
+  },
+  {
+    path: 'unauthorized',
+    component: UnauthorizedComponent
   },
   {
     path: '**',

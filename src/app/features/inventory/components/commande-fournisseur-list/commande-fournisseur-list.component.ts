@@ -79,7 +79,6 @@ export class CommandeFournisseurListComponent implements OnInit {
     return classes[status] || 'bg-secondary text-white';
   }
 
-
   onAdd(): void {
     this.router.navigate(['/inventory/commandes-fournisseurs/create']);
   }

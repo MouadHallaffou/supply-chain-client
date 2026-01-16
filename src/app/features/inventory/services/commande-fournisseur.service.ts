@@ -24,12 +24,10 @@ export class CommandeFournisseurService {
         );
     }
 
-    // Récupérer une commande par ID
     getById(id: number): Observable<any> {
         return this.http.get(`${this.apiUrl}/${id}`);
     }
 
-    // Mettre à jour une commande
     update(id: number, commande: any): Observable<any> {
         return this.http.put(`${this.apiUrl}/${id}`, commande);
     }

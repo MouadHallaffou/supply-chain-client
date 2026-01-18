@@ -24,12 +24,18 @@ export const routes: Routes = [
         loadChildren: () => import('./features/user-management/user-management.routes')
           .then(m => m.USER_MANAGEMENT_ROUTES),
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'ADMIN'] } // Require admin role
+        data: { roles: ['admin', 'ADMIN'] }
       },
       {
         path: 'inventory',
         loadChildren: () => import('./features/inventory/inventory.routes')
           .then(m => m.INVENTORY_ROUTES),
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'products',
+        loadChildren: () => import('./features/production/production.routes')
+          .then(m => m.PRODUCTION_ROUTES),
         canActivate: [AuthGuard]
       }
     ]

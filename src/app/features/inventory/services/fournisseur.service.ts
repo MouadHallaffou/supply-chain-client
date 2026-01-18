@@ -12,42 +12,36 @@ export class FournisseurService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/fournisseurs`;
 
-  // GET - Récupérer tous les fournisseurs
   getAll(): Observable<Fournisseur[]> {
     return this.http.get<Fournisseur[]>(this.apiUrl).pipe(
       catchError(this.handleError)
     );
   }
 
-  // GET - Récupérer un fournisseur par ID
   getById(id: number): Observable<Fournisseur> {
     return this.http.get<Fournisseur>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  // POST - Créer un nouveau fournisseur
   create(fournisseur: FournisseurCreateDto): Observable<Fournisseur> {
     return this.http.post<Fournisseur>(this.apiUrl, fournisseur).pipe(
       catchError(this.handleError)
     );
   }
 
-  // PUT - Mettre à jour un fournisseur
   update(id: number, fournisseur: FournisseurUpdateDto): Observable<Fournisseur> {
     return this.http.put<Fournisseur>(`${this.apiUrl}/${id}`, fournisseur).pipe(
       catchError(this.handleError)
     );
   }
 
-  // DELETE - Supprimer un fournisseur
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  // GET - Rechercher par nom
   searchByName(name: string): Observable<Fournisseur[]> {
     const params = new HttpParams().set('name', name);
     return this.http.get<Fournisseur[]>(`${this.apiUrl}/search`, { params }).pipe(
@@ -55,9 +49,6 @@ export class FournisseurService {
     );
   }
 
-  /**
-   * Gestion des erreurs HTTP
-   */
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Une erreur est survenue';
 

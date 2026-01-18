@@ -87,7 +87,6 @@ export class MatierePremiereListComponent implements OnInit {
       return;
     }
 
-    // Filtrer localement les données chargées
     const filtered = this.matieresPremieres().filter(m =>
       m.name.toLowerCase().includes(searchTerm)
     );

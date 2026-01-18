@@ -79,9 +79,8 @@ export class CommandeFournisseurListComponent implements OnInit {
     return classes[status] || 'bg-secondary text-white';
   }
 
-
-  onView(id: number): void {
-    this.router.navigate(['/inventory/commandes-fournisseurs', id]);
+  onAdd(): void {
+    this.router.navigate(['/inventory/commandes-fournisseurs/create']);
   }
 
   onEdit(id: number): void {
@@ -107,9 +106,40 @@ export class CommandeFournisseurListComponent implements OnInit {
     return isNaN(date.getTime()) ? '' : date.toLocaleDateString('fr-FR');
   }
 
-  onAdd(): void {
-    this.router.navigate(['/inventory/commandes-fournisseurs/create']);
+  onStartProcessing(id: number): void {
+    this.commandeFournisseurService.startProcessing(id).subscribe({
+      next: () => {
+        this.loadCommandes();
+      },
+      error: (err) => {
+        this.error = 'Erreur lors du démarrage du traitement';
+        console.error(err);
+      }
+    });
   }
 
+  onCompleteOrder(id: number): void {
+    this.commandeFournisseurService.completeProcessing(id).subscribe({
+      next: () => {
+        this.loadCommandes();
+      },
+      error: (err) => {
+        this.error = 'Erreur lors de la complétion de la commande';
+        console.error(err);
+      }
+    });
+  }
+
+  onCancelOrder (id: number): void {
+    this.commandeFournisseurService.cancelOrder(id).subscribe({
+      next: () => {
+        this.loadCommandes();
+      },
+      error: (err) => {
+        this.error = 'Erreur lors de l\'annulation de la commande';
+        console.error(err);
+      }
+    });
+  }
 
 }

@@ -21,7 +21,6 @@ export class MatierePremiereFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
-  // Signals
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
@@ -29,10 +28,8 @@ export class MatierePremiereFormComponent implements OnInit {
   matierePremiereId = signal<number | null>(null);
   fournisseurs = signal<Fournisseur[]>([]);
 
-  // Formulaire
   matierePremiereForm!: FormGroup;
 
-  // Getters pour faciliter l'accès aux champs dans le template
   get name() { return this.matierePremiereForm.get('name')!; }
   get stockMinimum() { return this.matierePremiereForm.get('stockMinimum')!; }
   get stockQuantity() { return this.matierePremiereForm.get('stockQuantity')!; }
@@ -45,7 +42,6 @@ export class MatierePremiereFormComponent implements OnInit {
     this.checkEditMode();
   }
 
-  // Initialiser le formulaire avec validation
   private initForm(): void {
     this.matierePremiereForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -56,7 +52,6 @@ export class MatierePremiereFormComponent implements OnInit {
     });
   }
 
-  // Charger la liste des fournisseurs
   private loadFournisseurs(): void {
     this.fournisseurService.getAll().subscribe({
       next: (data) => {
@@ -68,7 +63,6 @@ export class MatierePremiereFormComponent implements OnInit {
     });
   }
 
-  // Vérifier si on est en mode édition
   private checkEditMode(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -79,7 +73,6 @@ export class MatierePremiereFormComponent implements OnInit {
     }
   }
 
-  // Charger les données d'une matière première pour l'édition
   private loadMatierePremiere(id: number): void {
     this.loading.set(true);
     this.error.set(null);
@@ -97,7 +90,6 @@ export class MatierePremiereFormComponent implements OnInit {
     });
   }
 
-  // Soumettre le formulaire
   onSubmit(): void {
     if (this.matierePremiereForm.invalid) {
       this.markFormGroupTouched(this.matierePremiereForm);
@@ -111,7 +103,7 @@ export class MatierePremiereFormComponent implements OnInit {
     const formValue = this.matierePremiereForm.value;
 
     if (this.isEditMode() && this.matierePremiereId()) {
-      // Mode édition - PUT
+
       const updateDto: MatierePremiereUpdateDto = formValue;
       this.matierePremiereService.update(this.matierePremiereId()!, updateDto).subscribe({
         next: () => {
@@ -128,7 +120,7 @@ export class MatierePremiereFormComponent implements OnInit {
         }
       });
     } else {
-      // Mode création - POST
+
       const createDto: MatierePremiereCreateDto = formValue;
       this.matierePremiereService.create(createDto).subscribe({
         next: () => {
@@ -147,12 +139,10 @@ export class MatierePremiereFormComponent implements OnInit {
     }
   }
 
-  // Annuler et retourner à la liste
   onCancel(): void {
     this.router.navigate(['/inventory/matieres-premieres']);
   }
 
-  // Marquer tous les champs comme touchés pour afficher les erreurs
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach(key => {
       const control = formGroup.get(key);
@@ -164,7 +154,6 @@ export class MatierePremiereFormComponent implements OnInit {
     });
   }
 
-  // Gestion de la sélection multiple des fournisseurs
   onFournisseurChange(event: Event, fournisseurId: number): void {
     const checkbox = event.target as HTMLInputElement;
     const currentIds = this.fournisseurIds.value || [];
@@ -176,7 +165,6 @@ export class MatierePremiereFormComponent implements OnInit {
     }
   }
 
-  // Vérifier si un fournisseur est sélectionné
   isFournisseurSelected(fournisseurId: number): boolean {
     const currentIds = this.fournisseurIds.value || [];
     return currentIds.includes(fournisseurId);

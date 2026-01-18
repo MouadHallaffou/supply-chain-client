@@ -16,21 +16,17 @@ export class FournisseurListComponent implements OnInit {
   private readonly fournisseurService = inject(FournisseurService);
   private readonly router = inject(Router);
 
-  // Signals pour la gestion de l'état
   fournisseurs = signal<Fournisseur[]>([]);
   allFournisseurs = signal<Fournisseur[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
 
-  // Modal de suppression
   showDeleteModal = signal(false);
   selectedFournisseur = signal<Fournisseur | null>(null);
 
-  // Pagination
   totalItems = signal(0);
 
-  // Contrôles de formulaire
   searchControl = new FormControl('');
   statusFilter = new FormControl<boolean | null>(null);
   sortControl = new FormControl('name');
@@ -119,4 +115,5 @@ export class FournisseurListComponent implements OnInit {
       });
     }
   }
+
 }

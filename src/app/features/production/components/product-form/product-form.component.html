@@ -1,1 +1,158 @@
-<p>product-form works!</p>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="bi bi-box-seam me-2"></i>
+            {{ isEditMode() ? 'Modifier le produit' : 'Nouveau produit' }}
+          </h3>
+        </div>
+
+        <div class="card-body">
+          @if (error()) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ error() }}
+              <button type="button" class="btn-close" (click)="error.set(null)"></button>
+            </div>
+          }
+
+          @if (success()) {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              {{ success() }}
+              <button type="button" class="btn-close" (click)="success.set(null)"></button>
+            </div>
+          }
+
+          @if (loading()) {
+            <div class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
+              </div>
+              <p class="mt-2">Chargement en cours...</p>
+            </div>
+          } @else {
+            <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+              <!-- Nom -->
+              <div class="mb-3">
+                <label for="name" class="form-label">Nom du produit <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  formControlName="name"
+                  [class.is-invalid]="name.invalid && name.touched"
+                  placeholder="Ex: Produit A">
+                @if (name.invalid && name.touched) {
+                  <div class="invalid-feedback">
+                    @if (name.errors?.['required']) {
+                      <div>Le nom est requis</div>
+                    }
+                    @if (name.errors?.['minlength']) {
+                      <div>Minimum 2 caractères</div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Coût unitaire -->
+              <div class="mb-3">
+                <label for="costPerUnit" class="form-label">Coût unitaire (€) <span class="text-danger">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="costPerUnit"
+                  formControlName="costPerUnit"
+                  [class.is-invalid]="costPerUnit.invalid && costPerUnit.touched"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00">
+                @if (costPerUnit.invalid && costPerUnit.touched) {
+                  <div class="invalid-feedback">
+                    @if (costPerUnit.errors?.['required']) {
+                      <div>Le coût unitaire est requis</div>
+                    }
+                    @if (costPerUnit.errors?.['min']) {
+                      <div>Le coût doit être positif</div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Stock et Temps de production -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="stock" class="form-label">Stock <span class="text-danger">*</span></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="stock"
+                    formControlName="stock"
+                    [class.is-invalid]="stock.invalid && stock.touched"
+                    min="0"
+                    placeholder="0">
+                  @if (stock.invalid && stock.touched) {
+                    <div class="invalid-feedback">
+                      @if (stock.errors?.['required']) {
+                        <div>Le stock est requis</div>
+                      }
+                      @if (stock.errors?.['min']) {
+                        <div>Le stock doit être positif</div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="productionTimeHours" class="form-label">Temps de production (heures) <span class="text-danger">*</span></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="productionTimeHours"
+                    formControlName="productionTimeHours"
+                    [class.is-invalid]="productionTimeHours.invalid && productionTimeHours.touched"
+                    min="0"
+                    step="0.1"
+                    placeholder="0.0">
+                  @if (productionTimeHours.invalid && productionTimeHours.touched) {
+                    <div class="invalid-feedback">
+                      @if (productionTimeHours.errors?.['required']) {
+                        <div>Le temps de production est requis</div>
+                      }
+                      @if (productionTimeHours.errors?.['min']) {
+                        <div>Le temps doit être positif</div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Boutons d'action -->
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  (click)="onCancel()">
+                  <i class="bi bi-x-circle me-1"></i>
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="productForm.invalid || loading()">
+                  @if (loading()) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  }
+                  <i class="bi bi-check-circle me-1"></i>
+                  {{ isEditMode() ? 'Mettre à jour' : 'Créer' }}
+                </button>
+              </div>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

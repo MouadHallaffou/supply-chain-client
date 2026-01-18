@@ -1,1 +1,128 @@
-<p>product-list works!</p>
+<div class="container-fluid mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">
+        <i class="bi bi-truck me-2"></i>
+        Gestion des Produits
+      </h3>
+      <div>
+        <button class="btn btn-success" (click)="onAdd()">
+          <i class="bi bi-plus-circle me-1"></i>
+          Nouveau Produit
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Rechercher par nom...">
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+          <select class="form-select" [formControl]="sortControl" (change)="onSortChange()">
+            <option value="name">Nom (A-Z)</option>
+            <option value="price">Prix</option>
+            <option value="stock">Stock</option>
+          </select>
+        </div>
+
+        <div class="col-md-2 mb-3">
+          <button class="btn btn-outline-secondary w-100">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages d'erreur -->
+      @if (error()) {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ error() }}
+          <button type="button" class="btn-close" (click)="error.set(null)"></button>
+        </div>
+      }
+
+      @if (success()) {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          {{ success() }}
+          <button type="button" class="btn-close" (click)="success.set(null)"></button>
+        </div>
+      }
+
+      <!-- Chargement -->
+      @if (loading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          <p class="mt-2">Chargement des produits...</p>
+        </div>
+      }
+
+      @if (!loading() && products().length === 0) {
+        <div class="alert alert-info" role="alert">
+          <i class="bi bi-info-circle-fill me-2"></i>
+          Aucun produit trouvé.
+        </div>
+      }
+
+      <!-- Table des produits -->
+      @if (!loading() && products().length > 0) {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Nom</th>
+              <th>Coût unitaire</th>
+              <th>Stock</th>
+              <th>Temps de production (h)</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (product of products(); track product.productId) {
+                <tr>
+                  <td>{{ product.productId }}</td>
+                  <td class="fw-semibold">
+                    {{ product.name }}
+                  </td>
+                  <td>
+                    {{ product.costPerUnit | currency:'EUR' }}
+                  </td>
+                  <td>
+                    <span [class.text-danger]="product.stock < 10">
+                      {{ product.stock }}
+                    </span>
+                  </td>
+                  <td>
+                    {{ product.productionTimeHours }}h
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-primary me-2" (click)="onEdit(product)">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="onDelete(product)">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>

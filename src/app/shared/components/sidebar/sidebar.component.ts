@@ -73,17 +73,17 @@ export class SidebarComponent {
         {
           label: 'Produits',
           icon: 'bi-box',
-          route: '/production/products'
+          route: '/products'
         },
         {
           label: 'Ordres de Production',
           icon: 'bi-clipboard-check',
-          route: '/production/product-orders'
+          route: '/product-orders'
         },
         {
           label: 'Nomenclature',
           icon: 'bi-list-ul',
-          route: '/production/bill-of-materials'
+          route: '/bill-of-materials'
         }
       ]
     },

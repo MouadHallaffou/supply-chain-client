@@ -81,7 +81,7 @@ export class SidebarComponent {
           route: '/product-orders'
         },
         {
-          label: 'Nomenclature',
+          label: 'bill of Materials',
           icon: 'bi-list-ul',
           route: '/bill-of-materials'
         }

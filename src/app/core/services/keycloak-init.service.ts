@@ -44,7 +44,7 @@ export class KeycloakInitService {
       if (authenticated) {
         const userRoles = this.keycloakService.getUserRoles();
         const username = this.keycloakService.getUsername();
-        console.log('User roles:', userRoles);
+        console.log('UserModel roles:', userRoles);
         console.log('Username:', username);
         console.log('Token:', await this.keycloakService.getToken());
       }

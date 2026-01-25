@@ -1,4 +1,4 @@
-export interface Product {
+export interface ProductModel {
   productId: number;
   name: string;
   productionTimeHours: number;

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { User, CreateUserDto, UpdateUserDto } from '../models/user';
+import { UserModel, CreateUserDto, UpdateUserDto } from '../models/user.model';
 import {environment} from '../../../../environments/environment';
 
 @Injectable({
@@ -12,31 +12,31 @@ export class UserService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/users`;
 
-  private usersSubject = new BehaviorSubject<User[]>([]);
+  private usersSubject = new BehaviorSubject<UserModel[]>([]);
   public users$ = this.usersSubject.asObservable();
 
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.baseUrl).pipe(
+  getUsers(): Observable<UserModel[]> {
+    return this.http.get<UserModel[]>(this.baseUrl).pipe(
       tap(users => this.usersSubject.next(users)),
       catchError(this.handleError)
     );
   }
 
-  getUserById(userId: string): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/${userId}`).pipe(
+  getUserById(userId: string): Observable<UserModel> {
+    return this.http.get<UserModel>(`${this.baseUrl}/${userId}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  createUser(userData: CreateUserDto): Observable<User> {
-    return this.http.post<User>(this.baseUrl, userData).pipe(
+  createUser(userData: CreateUserDto): Observable<UserModel> {
+    return this.http.post<UserModel>(this.baseUrl, userData).pipe(
       tap(() => this.refreshUsers()),
       catchError(this.handleError)
     );
   }
 
-  updateUser(userId: string, userData: UpdateUserDto): Observable<User> {
-    return this.http.put<User>(`${this.baseUrl}/${userId}`, userData).pipe(
+  updateUser(userId: string, userData: UpdateUserDto): Observable<UserModel> {
+    return this.http.put<UserModel>(`${this.baseUrl}/${userId}`, userData).pipe(
       tap(() => this.refreshUsers()),
       catchError(this.handleError)
     );

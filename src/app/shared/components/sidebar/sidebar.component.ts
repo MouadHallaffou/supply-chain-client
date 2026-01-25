@@ -90,8 +90,24 @@ export class SidebarComponent {
     {
       label: 'Livraison',
       icon: 'bi-truck',
-      route: '/delivery',
-      expanded: false
+      expanded: false,
+      children: [
+        {
+          label: 'Adresses',
+          icon: 'bi-geo-alt',
+          route: '/delivery/addresses'
+        },
+        {
+          label: 'Clients',
+          icon: 'bi-people-fill',
+          route: '/delivery/clients'
+        },
+        {
+          label: 'Commandes Clients',
+          icon: 'bi-bag-check',
+          route: '/delivery/client-orders'
+        }
+      ]
     },
     {
       label: 'Rapports',

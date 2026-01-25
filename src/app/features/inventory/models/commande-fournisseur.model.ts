@@ -1,4 +1,4 @@
-export interface CommandeFournisseur {
+export interface CommandeFournisseurModel {
   commandeFournisseurId: number;
   fournisseurId: number;
   orderDate: string;

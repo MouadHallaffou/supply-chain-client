@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { Role, createRoleDto, updateRoleDto } from '../models/role';
+import { RoleModel, createRoleDto, updateRoleDto } from '../models/role.model';
 import {environment} from '../../../../environments/environment';
 
 @Injectable({
@@ -13,15 +13,15 @@ export class RoleService {
   private readonly baseUrl = `${environment.apiUrl}/roles`;
 
 
-  private rolesSubject = new BehaviorSubject<Role[]>([]);
+  private rolesSubject = new BehaviorSubject<RoleModel[]>([]);
   public roles$ = this.rolesSubject.asObservable();
 
   /**
    * Récupère tous les rôles
    */
-  getRoles(): Observable<Role[]> {
-    return this.http.get<Role[]>(this.baseUrl).pipe(
-      tap((roles: Role[]) => this.rolesSubject.next(roles)),
+  getRoles(): Observable<RoleModel[]> {
+    return this.http.get<RoleModel[]>(this.baseUrl).pipe(
+      tap((roles: RoleModel[]) => this.rolesSubject.next(roles)),
       catchError(this.handleError)
     );
   }
@@ -29,8 +29,8 @@ export class RoleService {
   /**
    * Récupère un rôle par ID
    */
-  getRoleById(id: number): Observable<Role> {
-    return this.http.get<Role>(`${this.baseUrl}/${id}`).pipe(
+  getRoleById(id: number): Observable<RoleModel> {
+    return this.http.get<RoleModel>(`${this.baseUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
@@ -38,8 +38,8 @@ export class RoleService {
   /**
    * Crée un nouveau rôle
    */
-  createRole(roleData: createRoleDto): Observable<Role> {
-    return this.http.post<Role>(this.baseUrl, roleData).pipe(
+  createRole(roleData: createRoleDto): Observable<RoleModel> {
+    return this.http.post<RoleModel>(this.baseUrl, roleData).pipe(
       tap(() => this.refreshRoles()),
       catchError(this.handleError)
     );
@@ -48,8 +48,8 @@ export class RoleService {
   /**
    * Met à jour un rôle
    */
-  updateRole(id: number, roleData: updateRoleDto): Observable<Role> {
-    return this.http.put<Role>(`${this.baseUrl}/${id}`, roleData).pipe(
+  updateRole(id: number, roleData: updateRoleDto): Observable<RoleModel> {
+    return this.http.put<RoleModel>(`${this.baseUrl}/${id}`, roleData).pipe(
       tap(() => this.refreshRoles()),
       catchError(this.handleError)
     );

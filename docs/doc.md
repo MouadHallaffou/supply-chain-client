@@ -54,7 +54,7 @@ let status: 'pending' | 'approved' | 'rejected' = 'pending';
 
 ```typescript
 // Interface simple
-interface User {
+interface UserModel {
   id: number;
   firstName: string;
   lastName: string;
@@ -64,7 +64,7 @@ interface User {
 }
 
 // Utilisation
-const user: User = {
+const user: UserModel = {
   id: 1,
   firstName: "John",
   lastName: "Doe",
@@ -73,7 +73,7 @@ const user: User = {
 };
 
 // Interface avec méthodes
-interface Product {
+interface ProductModel {
   id: number;
   name: string;
   price: number;
@@ -82,14 +82,14 @@ interface Product {
 }
 
 // Interface héritant d'une autre
-interface Employee extends User {
+interface Employee extends UserModel {
   employeeId: string;
   department: string;
   salary: number;
 }
 
 // Type Alias (alternative aux interfaces)
-type Address = {
+type AddressModel = {
   street: string;
   city: string;
   zipCode: string;
@@ -158,7 +158,7 @@ console.log(emp.introduce()); // "Je m'appelle Alice et j'ai 30 ans et je suis e
 **Syntaxe courte pour le constructeur** :
 
 ```typescript
-class Product {
+class ProductModel {
   // Propriétés déclarées directement dans le constructeur
   constructor(
     public id: number,
@@ -172,7 +172,7 @@ class Product {
   }
 }
 
-const product = new Product(1, "Laptop", 1200);
+const product = new ProductModel(1, "Laptop", 1200);
 console.log(product.name); // "Laptop"
 ```
 
@@ -231,7 +231,7 @@ class Calculator {
 
 ```typescript
 // Création d'une Promise
-function fetchUser(id: number): Promise<User> {
+function fetchUser(id: number): Promise<UserModel> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (id > 0) {
@@ -246,7 +246,7 @@ function fetchUser(id: number): Promise<User> {
 // Utilisation avec .then()
 fetchUser(1)
   .then(user => {
-    console.log("User:", user);
+    console.log("UserModel:", user);
   })
   .catch(error => {
     console.error("Erreur:", error);
@@ -256,7 +256,7 @@ fetchUser(1)
 async function getUser() {
   try {
     const user = await fetchUser(1);
-    console.log("User:", user);
+    console.log("UserModel:", user);
   } catch (error) {
     console.error("Erreur:", error);
   }
@@ -298,7 +298,7 @@ interface ApiResponse<T> {
   message: string;
 }
 
-const userResponse: ApiResponse<User> = {
+const userResponse: ApiResponse<UserModel> = {
   data: {id: 1, name: "John", email: "john@test.com"},
   status: 200,
   message: "Success"
@@ -322,10 +322,10 @@ class DataStore<T> {
 }
 
 // Utilisation
-const userStore = new DataStore<User>();
+const userStore = new DataStore<UserModel>();
 userStore.add({id: 1, name: "Alice", email: "alice@test.com"});
 
-const productStore = new DataStore<Product>();
+const productStore = new DataStore<ProductModel>();
 productStore.add({id: 1, name: "Laptop", price: 1200});
 
 // Contraintes génériques
@@ -1926,7 +1926,7 @@ export class NameComponent {
 **Exemple: Panier d'achat** :
 
 ```typescript
-interface Product {
+interface ProductModel {
   id: number;
   name: string;
   price: number;
@@ -1950,7 +1950,7 @@ interface Product {
   `
 })
 export class CartComponent {
-  cart = signal<Product[]>([
+  cart = signal<ProductModel[]>([
     {id: 1, name: 'Laptop', price: 1000, quantity: 1},
     {id: 2, name: 'Mouse', price: 25, quantity: 2}
   ]);
@@ -1972,7 +1972,7 @@ export class CartComponent {
     this.totalPrice() + this.tax()
   );
 
-  addProduct(product: Product) {
+  addProduct(product: ProductModel) {
     this.cart.update(items => [...items, product]);
   }
 
@@ -2112,7 +2112,7 @@ export class ParentComponent {
   currentUser = {name: 'Alice', email: 'alice@test.com'};
 
   onUserSelected(id: number) {
-    console.log('User selected:', id);
+    console.log('UserModel selected:', id);
   }
 }
 
@@ -2371,7 +2371,7 @@ import {ActivatedRoute} from '@angular/router';
 
 @Component({
   template: `
-    <h2>User ID: {{ userId }}</h2>
+    <h2>UserModel ID: {{ userId }}</h2>
   `
 })
 export class UserDetailComponent {
@@ -2891,7 +2891,7 @@ import {Injectable, inject} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
-interface User {
+interface UserModel {
   id: number;
   name: string;
   email: string;
@@ -2905,36 +2905,36 @@ export class UserService {
   private apiUrl = 'http://localhost:8080/api/v1/users';
 
   // GET
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUrl);
+  getUsers(): Observable<UserModel[]> {
+    return this.http.get<UserModel[]>(this.apiUrl);
   }
 
   // GET avec paramètres
-  getUsersPaginated(page: number, size: number): Observable<User[]> {
+  getUsersPaginated(page: number, size: number): Observable<UserModel[]> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<User[]>(this.apiUrl, {params});
+    return this.http.get<UserModel[]>(this.apiUrl, {params});
   }
 
   // GET by ID
-  getUserById(id: number): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/${id}`);
+  getUserById(id: number): Observable<UserModel> {
+    return this.http.get<UserModel>(`${this.apiUrl}/${id}`);
   }
 
   // POST
-  createUser(user: Partial<User>): Observable<User> {
+  createUser(user: Partial<UserModel>): Observable<UserModel> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    return this.http.post<User>(this.apiUrl, user, {headers});
+    return this.http.post<UserModel>(this.apiUrl, user, {headers});
   }
 
   // PUT
-  updateUser(id: number, user: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/${id}`, user);
+  updateUser(id: number, user: Partial<UserModel>): Observable<UserModel> {
+    return this.http.put<UserModel>(`${this.apiUrl}/${id}`, user);
   }
 
   // DELETE
@@ -2953,7 +2953,7 @@ export class UserService {
 })
 export class UserListComponent {
   private userService = inject(UserService);
-  users: User[] = [];
+  users: UserModel[] = [];
 
   ngOnInit() {
     this.userService.getUsers().subscribe({
@@ -3147,7 +3147,7 @@ export class UserListComponent implements OnInit {
   private userService = inject(UserService);
 
   title = 'Liste des utilisateurs';
-  users: User[] = [];
+  users: UserModel[] = [];
 
   ngOnInit() {
     // Initialisation: charger les données
@@ -3232,7 +3232,7 @@ import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
   `
 })
 export class UserDetailComponent implements OnChanges {
-  @Input() user?: User;
+  @Input() user?: UserModel;
   @Input() isActive = false;
 
   ngOnChanges(changes: SimpleChanges) {
@@ -3243,7 +3243,7 @@ export class UserDetailComponent implements OnChanges {
       const currentValue = changes['user'].currentValue;
       const previousValue = changes['user'].previousValue;
       const firstChange = changes['user'].firstChange;
-      console.log('User changed:', {
+      console.log('UserModel changed:', {
         current: currentValue,
         previous: previousValue,
         first: firstChange
@@ -3259,7 +3259,7 @@ export class UserDetailComponent implements OnChanges {
     }
   }
 
-  private onUserUpdated(user: User) {
+  private onUserUpdated(user: UserModel) {
 // Logique quand l'utilisateur change
   }
 }

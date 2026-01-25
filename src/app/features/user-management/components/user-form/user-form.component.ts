@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { RoleService } from '../../services/role.service';
-import { Role } from '../../models/role';
+import { RoleModel } from '../../models/role.model';
 
 @Component({
   selector: 'app-user-form',
@@ -21,7 +21,7 @@ export class UserFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   userForm!: FormGroup;
-  roles = signal<Role[]>([]);
+  roles = signal<RoleModel[]>([]);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
   isEditMode = signal<boolean>(false);

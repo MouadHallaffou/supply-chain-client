@@ -37,6 +37,12 @@ export const routes: Routes = [
         loadChildren: () => import('./features/production/production.routes')
           .then(m => m.PRODUCTION_ROUTES),
         canActivate: [AuthGuard]
+      },
+      {
+        path: 'delivery',
+        loadChildren: () => import('./features/delivery/delivery.routes')
+          .then(m => m.DELIVERY_ROUTES),
+        canActivate: [AuthGuard]
       }
     ]
   },

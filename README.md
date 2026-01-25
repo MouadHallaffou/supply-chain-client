@@ -132,7 +132,7 @@ supply-chain-client/
    - Gestion des produits
    - Gestion des ordres de production
    - Gestion des nomenclatures (BOM)
-4. **User Management** - Gestion des utilisateurs et rôles
+4. **UserModel Management** - Gestion des utilisateurs et rôles
 
 ### Sécurité
 

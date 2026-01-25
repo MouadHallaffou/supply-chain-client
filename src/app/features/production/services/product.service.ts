@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpParams} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {Observable, throwError} from 'rxjs';
-import {Product} from '../models/product';
+import {ProductModel} from '../models/product.model';
 import {catchError} from 'rxjs/operators';
 
 @Injectable({
@@ -12,29 +12,29 @@ export class ProductService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/products`;
 
-  getAll(page: number, size: number): Observable<Product[]> {
+  getAll(page: number, size: number): Observable<ProductModel[]> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<Product[]>(`${this.apiUrl}`, { params });
+    return this.http.get<ProductModel[]>(`${this.apiUrl}`, { params });
   }
 
 
-  getById(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/${id}`).pipe(
+  getById(id: number): Observable<ProductModel> {
+    return this.http.get<ProductModel>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  create(product: Product): Observable<Product> {
-    return this.http.post<Product>(this.apiUrl, product).pipe(
+  create(product: ProductModel): Observable<ProductModel> {
+    return this.http.post<ProductModel>(this.apiUrl, product).pipe(
       catchError(this.handleError)
     );
   }
 
-  update(id: number, product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/${id}`, product).pipe(
+  update(id: number, product: ProductModel): Observable<ProductModel> {
+    return this.http.put<ProductModel>(`${this.apiUrl}/${id}`, product).pipe(
       catchError(this.handleError)
     );
   }
@@ -67,7 +67,7 @@ export class ProductService {
           errorMessage = 'Accès interdit.';
           break;
         case 404:
-          errorMessage = 'Fournisseur non trouvé.';
+          errorMessage = 'FournisseurModel non trouvé.';
           break;
         case 409:
           errorMessage = 'Ce fournisseur existe déjà.';

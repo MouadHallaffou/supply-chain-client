@@ -1,0 +1,202 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h3 class="mb-0">
+            <i class="bi bi-geo-alt me-2"></i>
+            {{ isEditMode ? 'Edit Address' : 'Create New Address' }}
+          </h3>
+        </div>
+
+        <div class="card-body">
+          <form [formGroup]="addressForm" (ngSubmit)="onSubmit()">
+            <!-- Street -->
+            <div class="mb-3">
+              <label for="street" class="form-label">
+                Street <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="street"
+                formControlName="street"
+                placeholder="Enter street address">
+
+              @if (street?.invalid && (street?.dirty || street?.touched)) {
+                <div class="text-danger small mt-1">
+                  @if (street?.errors?.['required']) {
+                    <div>Street is required</div>
+                  }
+                  @if (street?.errors?.['maxlength']) {
+                    <div>Street must be less than 200 characters</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- City -->
+            <div class="mb-3">
+              <label for="city" class="form-label">
+                City <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="city"
+                formControlName="city"
+                placeholder="Enter city">
+
+              @if (city?.invalid && (city?.dirty || city?.touched)) {
+                <div class="text-danger small mt-1">
+                  @if (city?.errors?.['required']) {
+                    <div>City is required</div>
+                  }
+                  @if (city?.errors?.['maxlength']) {
+                    <div>City must be less than 100 characters</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- State -->
+            <div class="mb-3">
+              <label for="state" class="form-label">State</label>
+              <input
+                type="text"
+                class="form-control"
+                id="state"
+                formControlName="state"
+                placeholder="Enter state">
+
+              @if (state?.invalid && (state?.dirty || state?.touched)) {
+                <div class="text-danger small mt-1">
+                  @if (state?.errors?.['maxlength']) {
+                    <div>State must be less than 100 characters</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Country -->
+            <div class="mb-3">
+              <label for="country" class="form-label">Country</label>
+              <input
+                type="text"
+                class="form-control"
+                id="country"
+                formControlName="country"
+                placeholder="Enter country">
+
+              @if (country?.invalid && (country?.dirty || country?.touched)) {
+                <div class="text-danger small mt-1">
+                  @if (country?.errors?.['maxlength']) {
+                    <div>Country must be less than 100 characters</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Zip Code -->
+            <div class="mb-3">
+              <label for="zipCode" class="form-label">
+                Zip Code <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="zipCode"
+                formControlName="zipCode"
+                placeholder="Enter zip code">
+
+              @if (zipCode?.invalid && (zipCode?.dirty || zipCode?.touched)) {
+                <div class="text-danger small mt-1">
+                  @if (zipCode?.errors?.['required']) {
+                    <div>Zip code is required</div>
+                  }
+                  @if (zipCode?.errors?.['maxlength']) {
+                    <div>Zip code must be less than 20 characters</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Client ID -->
+            <div class="mb-3">
+              <label for="clientId" class="form-label">
+                Client ID <span class="text-danger">*</span>
+              </label>
+              <input
+                type="number"
+                class="form-control"
+                id="clientId"
+                formControlName="clientId"
+                placeholder="Enter client ID"
+                min="1">
+
+              @if (clientId?.invalid && (clientId?.dirty || clientId?.touched)) {
+                <div class="text-danger small mt-1">
+                  @if (clientId?.errors?.['required']) {
+                    <div>Client ID is required</div>
+                  }
+                  @if (clientId?.errors?.['min']) {
+                    <div>Client ID must be greater than 0</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Error Messages -->
+            @if (createError$ | async; as error) {
+              <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ error }}
+              </div>
+            }
+
+            @if (updateError$ | async; as error) {
+              <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ error }}
+              </div>
+            }
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between gap-2 mt-4">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="onCancel()"
+                [disabled]="(saving$ | async) || (updating$ | async)">
+                <i class="bi bi-x-circle me-1"></i>
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-success"
+                [disabled]="addressForm.invalid || (saving$ | async) || (updating$ | async)">
+                <i class="bi bi-check-circle me-1"></i>
+                @if (isEditMode) {
+                  @if (updating$ | async) {
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                    Updating...
+                  } @else {
+                    Update Address
+                  }
+                } @else {
+                  @if (saving$ | async) {
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                    Creating...
+                  } @else {
+                    Create Address
+                  }
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

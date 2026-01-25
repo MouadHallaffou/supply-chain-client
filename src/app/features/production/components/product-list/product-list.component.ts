@@ -1,6 +1,6 @@
 import {Component, OnInit, signal} from '@angular/core';
 import {ProductService} from '../../services/product.service';
-import {Product} from '../../models/product';
+import {ProductModel} from '../../models/product.model';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
@@ -19,14 +19,14 @@ export class ProductListComponent implements OnInit{
   ) {
   }
 
-  allProducts = signal<Product[]>([]);
-  products = signal<Product[]>([]);
+  allProducts = signal<ProductModel[]>([]);
+  products = signal<ProductModel[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
 
   showDeleteModal = signal(false);
-  selectedProduct = signal<Product | null>(null);
+  selectedProduct = signal<ProductModel | null>(null);
 
   totalItems = signal(0);
   sortControl = new FormControl('name');
@@ -75,16 +75,16 @@ export class ProductListComponent implements OnInit{
     this.router.navigate(['/products/new']);
   }
 
-  onEdit(product: Product): void {
+  onEdit(product: ProductModel): void {
     this.router.navigate(['/products/edit', product.productId]);
   }
 
-  onDelete(product: Product): void {
+  onDelete(product: ProductModel): void {
     this.confirmDelete(product);
     this.deleteProduct();
   }
 
-  confirmDelete(product: Product): void {
+  confirmDelete(product: ProductModel): void {
     this.selectedProduct.set(product);
     this.showDeleteModal.set(true);
   }

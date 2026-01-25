@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FournisseurService } from '../../services/fournisseur.service';
-import { FournisseurCreateDto, FournisseurUpdateDto } from '../../models/fournisseur';
+import { FournisseurCreateDto, FournisseurUpdateDto } from '../../models/fournisseur.model';
 
 @Component({
   selector: 'app-fournisseur-form',
@@ -94,7 +94,7 @@ export class FournisseurFormComponent implements OnInit {
       const updateDto: FournisseurUpdateDto = formValue;
       this.fournisseurService.update(this.fournisseurId()!, updateDto).subscribe({
         next: (data) => {
-          this.success.set('Fournisseur modifié avec succès');
+          this.success.set('FournisseurModel modifié avec succès');
           this.loading.set(false);
           setTimeout(() => {
             this.router.navigate(['/inventory/fournisseurs']);
@@ -111,7 +111,7 @@ export class FournisseurFormComponent implements OnInit {
       const createDto: FournisseurCreateDto = formValue;
       this.fournisseurService.create(createDto).subscribe({
         next: (data) => {
-          this.success.set('Fournisseur créé avec succès');
+          this.success.set('FournisseurModel créé avec succès');
           this.loading.set(false);
           setTimeout(() => {
             this.router.navigate(['/inventory/fournisseurs']);

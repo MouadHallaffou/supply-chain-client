@@ -1,4 +1,4 @@
-import { ApplicationConfig, APP_INITIALIZER, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, APP_INITIALIZER, importProvidersFrom, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -8,6 +8,11 @@ import { routes } from './app.routes';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 
 import { KeycloakInitService } from './core/services/keycloak-init.service';
+import { addressReducer } from './features/delivery/store/address/address.reducer';
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { AddressEffects } from './features/delivery/store/address/address.effects';
 
 function initializeKeycloak(keycloakInitService: KeycloakInitService) {
   return () => keycloakInitService.initialize();
@@ -30,6 +35,17 @@ export const appConfig: ApplicationConfig = {
       useFactory: initializeKeycloak,
       multi: true,
       deps: [KeycloakInitService]
-    }
+    },
+    provideStore({
+      address: addressReducer
+    }),
+    provideEffects([AddressEffects]),
+    provideStoreDevtools({
+      maxAge: 25,
+      logOnly: !isDevMode(),
+      connectInZone: true
+    })
   ]
 };
+
+

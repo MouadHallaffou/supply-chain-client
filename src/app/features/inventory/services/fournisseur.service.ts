@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Fournisseur, FournisseurCreateDto, FournisseurUpdateDto } from '../models/fournisseur';
+import { FournisseurModel, FournisseurCreateDto, FournisseurUpdateDto } from '../models/fournisseur.model';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({
@@ -12,26 +12,26 @@ export class FournisseurService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/fournisseurs`;
 
-  getAll(): Observable<Fournisseur[]> {
-    return this.http.get<Fournisseur[]>(this.apiUrl).pipe(
+  getAll(): Observable<FournisseurModel[]> {
+    return this.http.get<FournisseurModel[]>(this.apiUrl).pipe(
       catchError(this.handleError)
     );
   }
 
-  getById(id: number): Observable<Fournisseur> {
-    return this.http.get<Fournisseur>(`${this.apiUrl}/${id}`).pipe(
+  getById(id: number): Observable<FournisseurModel> {
+    return this.http.get<FournisseurModel>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  create(fournisseur: FournisseurCreateDto): Observable<Fournisseur> {
-    return this.http.post<Fournisseur>(this.apiUrl, fournisseur).pipe(
+  create(fournisseur: FournisseurCreateDto): Observable<FournisseurModel> {
+    return this.http.post<FournisseurModel>(this.apiUrl, fournisseur).pipe(
       catchError(this.handleError)
     );
   }
 
-  update(id: number, fournisseur: FournisseurUpdateDto): Observable<Fournisseur> {
-    return this.http.put<Fournisseur>(`${this.apiUrl}/${id}`, fournisseur).pipe(
+  update(id: number, fournisseur: FournisseurUpdateDto): Observable<FournisseurModel> {
+    return this.http.put<FournisseurModel>(`${this.apiUrl}/${id}`, fournisseur).pipe(
       catchError(this.handleError)
     );
   }
@@ -42,9 +42,9 @@ export class FournisseurService {
     );
   }
 
-  searchByName(name: string): Observable<Fournisseur[]> {
+  searchByName(name: string): Observable<FournisseurModel[]> {
     const params = new HttpParams().set('name', name);
-    return this.http.get<Fournisseur[]>(`${this.apiUrl}/search`, { params }).pipe(
+    return this.http.get<FournisseurModel[]>(`${this.apiUrl}/search`, { params }).pipe(
       catchError(this.handleError)
     );
   }
@@ -68,7 +68,7 @@ export class FournisseurService {
           errorMessage = 'Accès interdit.';
           break;
         case 404:
-          errorMessage = 'Fournisseur non trouvé.';
+          errorMessage = 'FournisseurModel non trouvé.';
           break;
         case 409:
           errorMessage = 'Ce fournisseur existe déjà.';

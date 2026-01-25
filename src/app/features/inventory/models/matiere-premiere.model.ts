@@ -1,4 +1,4 @@
-export interface MatierePremiere {
+export interface MatierePremiereModel {
   matierePremiereId?: number;
   name: string;
   stockMinimum: number;

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FournisseurService } from '../../services/fournisseur.service';
-import { Fournisseur } from '../../models/fournisseur';
+import { FournisseurModel } from '../../models/fournisseur.model';
 
 @Component({
   selector: 'app-fournisseur-list',
@@ -16,14 +16,14 @@ export class FournisseurListComponent implements OnInit {
   private readonly fournisseurService = inject(FournisseurService);
   private readonly router = inject(Router);
 
-  fournisseurs = signal<Fournisseur[]>([]);
-  allFournisseurs = signal<Fournisseur[]>([]);
+  fournisseurs = signal<FournisseurModel[]>([]);
+  allFournisseurs = signal<FournisseurModel[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
 
   showDeleteModal = signal(false);
-  selectedFournisseur = signal<Fournisseur | null>(null);
+  selectedFournisseur = signal<FournisseurModel | null>(null);
 
   totalItems = signal(0);
 
@@ -76,15 +76,15 @@ export class FournisseurListComponent implements OnInit {
     this.router.navigate(['/inventory/fournisseurs/new']);
   }
 
-  onView(fournisseur: Fournisseur): void {
+  onView(fournisseur: FournisseurModel): void {
     this.router.navigate(['/inventory/fournisseurs', fournisseur.fournisseurId]);
   }
 
-  onEdit(fournisseur: Fournisseur): void {
+  onEdit(fournisseur: FournisseurModel): void {
     this.router.navigate(['/inventory/fournisseurs', fournisseur.fournisseurId, 'edit']);
   }
 
-  onDelete(fournisseur: Fournisseur): void {
+  onDelete(fournisseur: FournisseurModel): void {
     this.selectedFournisseur.set(fournisseur);
     this.showDeleteModal.set(true);
   }

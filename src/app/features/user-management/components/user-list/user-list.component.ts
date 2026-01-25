@@ -5,8 +5,8 @@ import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { UserService } from '../../services/user.service';
 import { RoleService } from '../../services/role.service';
-import { User } from '../../models/user';
-import { Role } from '../../models/role';
+import { UserModel } from '../../models/user.model';
+import { RoleModel } from '../../models/role.model';
 
 @Component({
   selector: 'app-user-list',
@@ -21,8 +21,8 @@ export class UserListComponent implements OnInit {
   private fb = inject(FormBuilder);
   router = inject(Router);
 
-  users = signal<User[]>([]);
-  roles = signal<Role[]>([]);
+  users = signal<UserModel[]>([]);
+  roles = signal<RoleModel[]>([]);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
@@ -79,7 +79,7 @@ export class UserListComponent implements OnInit {
     this.error.set(null);
 
     this.userService.getUsers().subscribe({
-      next: (users: User[]) => {
+      next: (users: UserModel[]) => {
         this.users.set(users);
         this.loading.set(false);
       },
@@ -93,7 +93,7 @@ export class UserListComponent implements OnInit {
 
   loadRoles(): void {
     this.roleService.getRoles().subscribe({
-      next: (roles: Role[]) => {
+      next: (roles: RoleModel[]) => {
         this.roles.set(roles);
       },
       error: (err: any) => {
@@ -114,11 +114,11 @@ export class UserListComponent implements OnInit {
     this.router.navigate(['/user-management/users/create']);
   }
 
-  viewUser(user: User): void {
+  viewUser(user: UserModel): void {
     this.router.navigate(['/user-management/users', user.userId]);
   }
 
-  editUser(user: User): void {
+  editUser(user: UserModel): void {
     this.router.navigate(['/user-management/users', user.userId, 'edit']);
   }
 

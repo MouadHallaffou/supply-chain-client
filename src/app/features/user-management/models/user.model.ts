@@ -1,6 +1,6 @@
-import {Role} from './role';
+import {RoleModel} from './role.model';
 
-export interface User {
+export interface UserModel {
   userId?: number;
   firstName: string;
   lastName: string;
@@ -10,7 +10,7 @@ export interface User {
   isActive: boolean;
   isDeleted: boolean;
   roleId: number;
-  role?: Role;
+  role?: RoleModel;
   createdAt?: Date;
   updatedAt?: Date;
 }

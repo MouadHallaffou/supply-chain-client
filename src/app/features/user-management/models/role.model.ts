@@ -1,4 +1,4 @@
-export interface Role {
+export interface RoleModel {
   roleId?: number;
   name: string;
   createdAt?: Date;

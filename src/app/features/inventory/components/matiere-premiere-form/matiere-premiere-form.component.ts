@@ -4,8 +4,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatierePremiereService } from '../../services/matiere-premiere.service';
 import { FournisseurService } from '../../services/fournisseur.service';
-import { MatierePremiereCreateDto, MatierePremiereUpdateDto } from '../../models/matiere-premiere';
-import { Fournisseur } from '../../models/fournisseur';
+import { MatierePremiereCreateDto, MatierePremiereUpdateDto } from '../../models/matiere-premiere.model';
+import { FournisseurModel } from '../../models/fournisseur.model';
 
 @Component({
   selector: 'app-matiere-premiere-form',
@@ -26,7 +26,7 @@ export class MatierePremiereFormComponent implements OnInit {
   success = signal<string | null>(null);
   isEditMode = signal(false);
   matierePremiereId = signal<number | null>(null);
-  fournisseurs = signal<Fournisseur[]>([]);
+  fournisseurs = signal<FournisseurModel[]>([]);
 
   matierePremiereForm!: FormGroup;
 

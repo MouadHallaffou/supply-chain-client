@@ -23,16 +23,16 @@
           <div class="card-header bg-success text-white">
             <h3 class="mb-0">
               <i class="bi bi-truck me-2"></i>
-              {{ isEditMode ? 'Modifier la Commande Fournisseur' : 'Nouvelle Commande Fournisseur' }}
+              {{ isEditMode ? 'Modifier la Commande FournisseurModel' : 'Nouvelle Commande FournisseurModel' }}
             </h3>
           </div>
 
           <div class="card-body">
             <form [formGroup]="commandeForm" (ngSubmit)="onSubmit()">
-              <!-- Fournisseur -->
+              <!-- FournisseurModel -->
               <div class="mb-3">
                 <label for="fournisseur" class="form-label">
-                  Fournisseur <span class="text-danger">*</span>
+                  FournisseurModel <span class="text-danger">*</span>
                 </label>
                 <select
                   class="form-select"

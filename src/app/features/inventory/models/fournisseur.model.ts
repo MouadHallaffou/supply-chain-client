@@ -1,4 +1,4 @@
-export interface Fournisseur {
+export interface FournisseurModel {
   fournisseurId?: number;
   name: string;
   contactEmail: string;

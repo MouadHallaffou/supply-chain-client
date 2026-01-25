@@ -6,8 +6,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { CommandeFournisseurService } from '../../services/commande-fournisseur.service';
 import { FournisseurService } from '../../services/fournisseur.service';
 import { MatierePremiereService } from '../../services/matiere-premiere.service';
-import { Fournisseur } from '../../models/fournisseur';
-import { MatierePremiere } from '../../models/matiere-premiere';
+import { FournisseurModel } from '../../models/fournisseur.model';
+import { MatierePremiereModel } from '../../models/matiere-premiere.model';
 
 @Component({
   selector: 'app-commande-fournisseur-form',
@@ -31,9 +31,9 @@ export class CommandeFournisseurFormComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   commandeForm!: FormGroup
-  fournisseurs: Fournisseur[] = []
-  // matieres: MatierePremiere[] = []
-  filteredMatieres: MatierePremiere[] = []
+  fournisseurs: FournisseurModel[] = []
+  // matieres: MatierePremiereModel[] = []
+  filteredMatieres: MatierePremiereModel[] = []
   selectedFournisseurId: number | null = null
   loading: boolean = false
   loadingCommande: boolean = false
@@ -104,7 +104,7 @@ export class CommandeFournisseurFormComponent implements OnInit, OnDestroy {
   loadMatieresByFournisseur(fournisseurId: number) {
     this.loading = true;
     this.matiereService.getByFournisseurId(fournisseurId).subscribe({
-      next: (matieres: MatierePremiere[]) => {
+      next: (matieres: MatierePremiereModel[]) => {
         this.filteredMatieres = matieres;
         this.loading = false;
         console.log(`Matières chargées pour le fournisseur ${fournisseurId}:`, matieres.length);

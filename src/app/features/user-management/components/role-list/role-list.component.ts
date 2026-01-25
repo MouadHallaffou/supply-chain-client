@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RoleService } from '../../services/role.service';
-import { Role } from '../../models/role';
+import { RoleModel } from '../../models/role.model';
 
 @Component({
   selector: 'app-role-list',
@@ -15,7 +15,7 @@ export class RoleListComponent implements OnInit {
   private roleService = inject(RoleService);
   private router = inject(Router);
 
-  roles = signal<Role[]>([]);
+  roles = signal<RoleModel[]>([]);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
@@ -44,7 +44,7 @@ export class RoleListComponent implements OnInit {
     this.router.navigate(['/user-management/roles/create']);
   }
 
-  editRole(role: Role): void {
+  editRole(role: RoleModel): void {
     this.router.navigate(['/user-management/roles', role.roleId, 'edit']);
   }
 

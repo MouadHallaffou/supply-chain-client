@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Router} from '@angular/router';
 import {MatierePremiereService} from '../../services/matiere-premiere.service';
-import {MatierePremiere} from '../../models/matiere-premiere';
+import {MatierePremiereModel} from '../../models/matiere-premiere.model';
 import {debounceTime, distinctUntilChanged} from 'rxjs';
 
 @Component({
@@ -17,13 +17,13 @@ export class MatierePremiereListComponent implements OnInit {
   private readonly matierePremiereService = inject(MatierePremiereService);
   private readonly router = inject(Router);
 
-  matieresPremieres = signal<MatierePremiere[]>([]);
+  matieresPremieres = signal<MatierePremiereModel[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
 
   showDeleteModal = signal(false);
-  selectedMatierePremiere = signal<MatierePremiere | null>(null);
+  selectedMatierePremiere = signal<MatierePremiereModel | null>(null);
 
   currentPage = signal(0);
   pageSize = 10;
@@ -109,15 +109,15 @@ export class MatierePremiereListComponent implements OnInit {
     this.router.navigate(['/inventory/matieres-premieres/new']);
   }
 
-  onView(matierePremiere: MatierePremiere): void {
+  onView(matierePremiere: MatierePremiereModel): void {
     this.router.navigate(['/inventory/matieres-premieres', matierePremiere.matierePremiereId]);
   }
 
-  onEdit(matierePremiere: MatierePremiere): void {
+  onEdit(matierePremiere: MatierePremiereModel): void {
     this.router.navigate(['/inventory/matieres-premieres', matierePremiere.matierePremiereId, 'edit']);
   }
 
-  onDelete(matierePremiere: MatierePremiere): void {
+  onDelete(matierePremiere: MatierePremiereModel): void {
     this.selectedMatierePremiere.set(matierePremiere);
     this.showDeleteModal.set(true);
   }
@@ -148,7 +148,7 @@ export class MatierePremiereListComponent implements OnInit {
     });
   }
 
-  isStockLow(matierePremiere: MatierePremiere): boolean {
+  isStockLow(matierePremiere: MatierePremiereModel): boolean {
     return matierePremiere.stockQuantity <= matierePremiere.stockMinimum;
   }
 

@@ -1,0 +1,243 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      <i class="bi bi-cart-plus me-2"></i>
+      {{ isEditMode ? 'Modifier' : 'Nouvelle' }} Commande Client
+    </h2>
+    <button routerLink="/delivery/client-orders" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>
+      Retour
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+      <p class="mt-2">Chargement de la commande...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="alert alert-danger alert-dismissible fade show">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      {{ error }}
+      <button type="button" class="btn-close" (click)="error = null"></button>
+    </div>
+  }
+
+  @if (!loading) {
+    <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <!-- Informations Client -->
+        <div class="col-md-6">
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">
+                <i class="bi bi-person me-2"></i>
+                Informations Client
+              </h5>
+            </div>
+            <div class="card-body">
+              <!-- Sélection Client -->
+              <div class="mb-3">
+                <label for="clientId" class="form-label fw-bold">
+                  Client <span class="text-danger">*</span>
+                </label>
+                <select
+                  id="clientId"
+                  class="form-select"
+                  formControlName="clientId"
+                  [class.is-invalid]="isFieldInvalid('clientId')">
+                  <option value="">-- Sélectionner un client --</option>
+                  @for (client of clients; track client.clientId) {
+                    <option [value]="client.clientId">{{ client.name }} ({{ client.email }})</option>
+                  }
+                </select>
+                @if (isFieldInvalid('clientId')) {
+                  <div class="invalid-feedback">
+                    Le client est requis
+                  </div>
+                }
+              </div>
+
+<!--              &lt;!&ndash; Sélection Adresse de Livraison &ndash;&gt;-->
+<!--              <div class="mb-3">-->
+<!--                <label for="deliveryAddressId" class="form-label fw-bold">-->
+<!--                  Adresse de Livraison-->
+<!--                </label>-->
+<!--                <select-->
+<!--                  id="deliveryAddressId"-->
+<!--                  class="form-select"-->
+<!--                  formControlName="deliveryAddressId">-->
+<!--                  <option value="">&#45;&#45; Sélectionner une adresse &#45;&#45;</option>-->
+<!--                  @for (address of addresses; track address.addressId) {-->
+<!--                    <option [value]="address.addressId">-->
+<!--                      {{ address.street }}, {{ address.city }} ({{ address.zipCode }})-->
+<!--                    </option>-->
+<!--                  }-->
+<!--                </select>-->
+<!--                <small class="text-muted">Optionnel - Peut être ajouté plus tard</small>-->
+<!--              </div>-->
+
+              <!-- Informations de la Commande (si mode édition) -->
+              @if (isEditMode && selectedOrder) {
+                <div class="mb-3">
+                  <label class="form-label fw-bold">N° Commande</label>
+                  <input type="text" class="form-control" [value]="selectedOrder.orderNumber" disabled>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Statut</label>
+                  <div>
+                    <span class="badge fs-6" [ngClass]="{
+                      'bg-warning text-dark': selectedOrder.status === 'EN_PREPARATION',
+                      'bg-info': selectedOrder.status === 'EN_ROUTE',
+                      'bg-success': selectedOrder.status === 'LIVREE',
+                      'bg-danger': selectedOrder.status === 'ANNULEE'
+                    }">
+                      {{ getStatusLabel(selectedOrder.status) }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Date de Création</label>
+                  <input type="text" class="form-control" [value]="selectedOrder.createdAt | date:'full'" disabled>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Articles de la Commande -->
+        <div class="col-md-6">
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">
+                <i class="bi bi-box-seam me-2"></i>
+                Articles de la Commande
+              </h5>
+            </div>
+            <div class="card-body">
+              <div formArrayName="items">
+                @for (item of items.controls; track $index; let i = $index) {
+                  <div [formGroupName]="i" class="border rounded p-3 mb-3 bg-light">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <h6 class="mb-0">Article #{{ i + 1 }}</h6>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger"
+                        (click)="removeItem(i)"
+                        [disabled]="items.length === 1">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+
+                    <div class="mb-2">
+                      <label class="form-label">
+                        ID Produit <span class="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        formControlName="productId"
+                        placeholder="Ex: PROD-001"
+                        [class.is-invalid]="isItemFieldInvalid(i, 'productId')">
+                      @if (isItemFieldInvalid(i, 'productId')) {
+                        <div class="invalid-feedback">
+                          L'ID produit est requis
+                        </div>
+                      }
+                    </div>
+
+                    <div class="mb-0">
+                      <label class="form-label">
+                        Quantité <span class="text-danger">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        class="form-control form-control-sm"
+                        formControlName="quantity"
+                        placeholder="Ex: 10"
+                        min="1"
+                        [class.is-invalid]="isItemFieldInvalid(i, 'quantity')">
+                      @if (isItemFieldInvalid(i, 'quantity')) {
+                        <div class="invalid-feedback">
+                          La quantité doit être au moins 1
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <!-- Bouton Ajouter Article -->
+              <button
+                type="button"
+                class="btn btn-outline-success w-100"
+                (click)="addItem()">
+                <i class="bi bi-plus-circle me-1"></i>
+                Ajouter un Article
+              </button>
+
+              <!-- Total des Articles -->
+              <div class="mt-3 p-3 bg-info bg-opacity-10 rounded">
+                <div class="d-flex justify-content-between">
+                  <strong>Total Articles:</strong>
+                  <strong>{{ items.length }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                  <strong>Quantité Totale:</strong>
+                  <strong>{{ getTotalQuantity() }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              routerLink="/delivery/client-orders">
+              <i class="bi bi-x-circle me-1"></i>
+              Annuler
+            </button>
+
+            <div>
+              @if (isEditMode && selectedOrder?.status !== 'ANNULEE' && selectedOrder?.status !== 'LIVREE') {
+                <button
+                  type="button"
+                  class="btn btn-danger me-2"
+                  (click)="onCancel()">
+                  <i class="bi bi-x-circle me-1"></i>
+                  Annuler la Commande
+                </button>
+              }
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="orderForm.invalid || submitting">
+                @if (submitting) {
+                  <span class="spinner-border spinner-border-sm me-1"></span>
+                  Traitement...
+                } @else {
+                  <i class="bi bi-check-circle me-1"></i>
+                  {{ isEditMode ? 'Mettre à Jour' : 'Créer' }} la Commande
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  }
+</div>
+

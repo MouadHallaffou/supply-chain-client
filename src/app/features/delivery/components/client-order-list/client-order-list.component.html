@@ -1,0 +1,215 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      <i class="bi bi-cart-check me-2"></i>
+      Gestion des Commandes Clients
+    </h2>
+    <a routerLink="/delivery/client-orders/new" class="btn btn-success">
+      <i class="bi bi-plus-circle me-1"></i>
+      Nouvelle Commande
+    </a>
+  </div>
+
+  <!-- Filtres par statut -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">
+            <i class="bi bi-funnel me-2"></i>
+            Filtrer par statut
+          </label>
+          <select class="form-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+            <option value="">Tous les statuts</option>
+            <option value="EN_PREPARATION">En Préparation</option>
+            <option value="EN_ROUTE">En Route</option>
+            <option value="LIVREE">Livrée</option>
+            <option value="ANNULEE">Annulée</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">
+            <i class="bi bi-search me-2"></i>
+            Recherche
+          </label>
+          <input type="text" class="form-control" placeholder="Rechercher par numéro de commande..." [(ngModel)]="searchTerm">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (vm$ | async; as vm) {
+    <!-- État de chargement -->
+    @if (vm.showLoading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="mt-2">Chargement des commandes...</p>
+      </div>
+    }
+
+    <!-- État d'erreur -->
+    @if (vm.showError) {
+      <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ vm.error }}
+        <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadOrders()">
+          <i class="bi bi-arrow-clockwise"></i> Réessayer
+        </button>
+      </div>
+    }
+
+    <!-- Contenu principal -->
+    @if (vm.showContent) {
+      <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Liste des Commandes</h5>
+          <span class="badge bg-primary">{{ vm.pagination.totalElements }} commandes</span>
+        </div>
+        <div class="card-body">
+          <!-- Tableau -->
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+              <tr>
+                <th>N° Commande</th>
+                <th>Client</th>
+                <th>Adresse de livraison</th>
+                <th>Statut</th>
+                <th>Montant Total</th>
+                <th>Articles</th>
+                <th>Date Création</th>
+                <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody>
+                @for (order of vm.orders; track order.orderId) {
+                  <tr>
+                    <td>
+                      <strong class="text-primary">#{{ order.orderNumber }}</strong>
+                    </td>
+                    <td>
+                      @if (order.client) {
+                        <div>
+                          <strong>{{ order.client.name }}</strong><br>
+                          <small class="text-muted">{{ order.client.email }}</small>
+                        </div>
+                      } @else {
+                        <span class="text-muted">-</span>
+                      }
+                    </td>
+                    <td>
+                      @if (order.deliveryAddress) {
+                        <div>
+                          <small>{{ order.deliveryAddress.street }}</small><br>
+                          <small class="text-muted">{{ order.deliveryAddress.city }}, {{ order.deliveryAddress.zipCode }}</small>
+                        </div>
+                      } @else {
+                        <span class="text-muted">Non définie</span>
+                      }
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'bg-warning text-dark': order.status === 'EN_PREPARATION',
+                        'bg-info': order.status === 'EN_ROUTE',
+                        'bg-success': order.status === 'LIVREE',
+                        'bg-danger': order.status === 'ANNULEE'
+                      }">
+                        {{ getStatusLabel(order.status) }}
+                      </span>
+                    </td>
+                    <td>
+                      @if (order.totalAmount) {
+                        <strong>{{ order.totalAmount | number:'1.2-2' }} MAD</strong>
+                      } @else {
+                        <span class="text-muted">-</span>
+                      }
+                    </td>
+                    <td>
+                      <span class="badge bg-secondary">{{ order.items?.length || 0 }} articles</span>
+                    </td>
+                    <td>
+                      <small>{{ order.createdAt | date:'short' }}</small>
+                    </td>
+                    <td>
+                      <div class="btn-group btn-group-sm">
+                        <button
+                          [routerLink]="['/delivery/client-orders', order.orderId]"
+                          class="btn btn-outline-primary"
+                          title="Voir/Modifier">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        @if (order.status !== 'ANNULEE' && order.status !== 'LIVREE') {
+                          <button
+                            (click)="onCancelOrder(order.orderId!)"
+                            class="btn btn-outline-danger"
+                            title="Annuler">
+                            <i class="bi bi-x-circle"></i>
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- État vide -->
+          @if (vm.isEmpty) {
+            <div class="text-center py-5">
+              <i class="bi bi-cart-x display-1 text-muted"></i>
+              <h4 class="mt-3">Aucune commande trouvée</h4>
+              <p class="text-muted">Commencez par créer votre première commande client</p>
+              <a routerLink="/delivery/client-orders/new" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>
+                Créer une Commande
+              </a>
+            </div>
+          }
+
+          <!-- Pagination -->
+          @if (vm.pagination.totalPages > 1) {
+            <nav aria-label="Navigation des pages" class="mt-4">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="vm.pagination.page === 0">
+                  <button
+                    class="page-link"
+                    (click)="onPageChange(vm.pagination.page - 1)"
+                    [disabled]="vm.pagination.page === 0">
+                    Précédent
+                  </button>
+                </li>
+
+                @for (page of [].constructor(vm.pagination.totalPages); track $index) {
+                  <li class="page-item" [class.active]="vm.pagination.page === $index">
+                    <button
+                      class="page-link"
+                      (click)="onPageChange($index)">
+                      {{ $index + 1 }}
+                    </button>
+                  </li>
+                }
+
+                <li class="page-item" [class.disabled]="vm.pagination.page === vm.pagination.totalPages - 1">
+                  <button
+                    class="page-link"
+                    (click)="onPageChange(vm.pagination.page + 1)"
+                    [disabled]="vm.pagination.page === vm.pagination.totalPages - 1">
+                    Suivant
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          }
+        </div>
+        <div class="card-footer text-muted">
+          Affichage de {{ vm.orders.length }} sur {{ vm.pagination.totalElements }} commandes
+          (Page {{ vm.pagination.page + 1 }} sur {{ vm.pagination.totalPages }})
+        </div>
+      </div>
+    }
+  }
+</div>
+

@@ -80,17 +80,8 @@ export class ClientListComponent implements OnInit {
     }));
   }
 
-
   onPageChange(newPage: number): void {
     this.store.dispatch(ClientActions.updateQueryParams({ queryParams: { page: newPage } }));
-  }
-
-  onPageSizeChange(newSize: number): void {
-    this.store.dispatch(ClientActions.updateQueryParams({ queryParams: { size: newSize, page: 0 } }));
-  }
-
-  onSort(sortBy: string, sortDir: 'asc' | 'desc'): void {
-    this.store.dispatch(ClientActions.updateQueryParams({ queryParams: { sortBy, sortDir } }));
   }
 
   onDeleteClient(clientId: string | undefined): void {

@@ -13,8 +13,10 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { AddressEffects } from './features/delivery/store/address/address.effects';
-import {clientReducer} from './features/delivery/store/client/client.reducer';
-import {ClientEffects} from './features/delivery/store/client/client.effects';
+import { clientReducer } from './features/delivery/store/client/client.reducer';
+import { ClientEffects } from './features/delivery/store/client/client.effects';
+import { clientOrderReducer } from './features/delivery/store/client-order/client-order.reducer';
+import { ClientOrderEffects } from './features/delivery/store/client-order/client-order.effects';
 
 function initializeKeycloak(keycloakInitService: KeycloakInitService) {
   return () => keycloakInitService.initialize();
@@ -40,9 +42,10 @@ export const appConfig: ApplicationConfig = {
     },
     provideStore({
       address: addressReducer,
-      clients: clientReducer
+      clients: clientReducer,
+      clientOrder: clientOrderReducer
     }),
-    provideEffects([AddressEffects, ClientEffects]),
+    provideEffects([AddressEffects, ClientEffects, ClientOrderEffects]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

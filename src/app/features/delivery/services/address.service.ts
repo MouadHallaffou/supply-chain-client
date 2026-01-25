@@ -3,13 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Address, AddressPage, AddressRequest, AddressQueryParams } from '../data/models/address.model';
+import {environment} from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AddressService {
-  private graphqlEndpoint = 'http://localhost:8080/graphql';
-
+  private graphqlEndpoint = `${environment.graphUrl}`;
   constructor(private http: HttpClient) {}
 
   // Méthode privée pour construire le corps de la requête GraphQL

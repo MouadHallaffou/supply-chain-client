@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Apollo, gql } from 'apollo-angular';
 import { ClientOrder } from '../data/models/client-order.model';
 import { ClientOrderInput } from '../data/models/client-order-input.model';
@@ -14,7 +14,7 @@ interface ClientOrderPage {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ClientOrderService {
   constructor(private apollo: Apollo) {}
@@ -39,10 +39,10 @@ export class ClientOrderService {
     }
   `;
 
-  // Requête GraphQL pour obtenir une commande par ID
+  // CORRIGÉ : Utiliser orderId au lieu de id
   private getClientOrderByIdQuery = gql`
-    query GetClientOrderById($id: ID!) {
-      getClientOrderById(id: $id) {
+    query GetClientOrderById($orderId: ID!) {
+      getClientOrderById(orderId: $orderId) {
         orderId
         orderNumber
         status
@@ -87,10 +87,10 @@ export class ClientOrderService {
     }
   `;
 
-  // Mutation GraphQL pour mettre à jour une commande
+  // CORRIGÉ : Utiliser orderId au lieu de id
   private updateClientOrderMutation = gql`
-    mutation UpdateClientOrder($id: ID!, $input: ClientOrderInput!) {
-      updateClientOrder(id: $id, input: $input) {
+    mutation UpdateClientOrder($orderId: ID!, $input: ClientOrderInput!) {
+      updateClientOrder(orderId: $orderId, input: $input) {
         orderId
         orderNumber
         status
@@ -101,10 +101,10 @@ export class ClientOrderService {
     }
   `;
 
-  // Mutation GraphQL pour annuler une commande
+  // CORRIGÉ : Utiliser orderId au lieu de id
   private cancelClientOrderMutation = gql`
-    mutation CancelClientOrder($id: ID!) {
-      cancelClientOrder(id: $id) {
+    mutation CancelClientOrder($orderId: ID!) {
+      cancelClientOrder(orderId: $orderId) {
         orderId
         orderNumber
         status
@@ -113,151 +113,176 @@ export class ClientOrderService {
     }
   `;
 
-  getAllClientOrders(page?: number, size?: number, sortBy?: string): Observable<ClientOrderPage> {
+  getAllClientOrders(
+    page?: number,
+    size?: number,
+    sortBy?: string,
+  ): Observable<ClientOrderPage> {
     const variables = {
       page: page ?? 0,
       size: size ?? 10,
-      sortBy: sortBy ?? 'createdAt'
+      sortBy: sortBy ?? 'createdAt',
     };
 
     console.log('getAllClientOrders - Variables:', variables);
 
-    return this.apollo.query<{ getAllClientOrders: ClientOrderPage }>({
-      query: this.getAllClientOrdersQuery,
-      variables,
-      fetchPolicy: 'network-only'
-    }).pipe(
-      map(response => {
-        console.log('GraphQL Response:', response);
-
-        // Vérifier s'il y a des erreurs GraphQL
-        if (response.errors && response.errors.length > 0) {
-          console.error('GraphQL Errors:', response.errors);
-          response.errors.forEach((error: any, index: number) => {
-            console.error(`Error ${index + 1}:`, error.message);
-            console.error('Locations:', error.locations);
-            console.error('Path:', error.path);
-          });
-          throw new Error(`GraphQL Error: ${response.errors[0].message}`);
-        }
-
-        if (!response || !response.data || !response.data.getAllClientOrders) {
-          console.error('Invalid GraphQL response:', response);
-          throw new Error('Invalid response from server - no data');
-        }
-        return response.data.getAllClientOrders;
+    return this.apollo
+      .query<{ getAllClientOrders: ClientOrderPage }>({
+        query: this.getAllClientOrdersQuery,
+        variables,
+        fetchPolicy: 'network-only',
       })
-    );
+      .pipe(
+        map((response) => {
+          console.log('GraphQL Response:', response);
+
+          // Vérifier s'il y a des erreurs GraphQL
+          if (response.errors && response.errors.length > 0) {
+            console.error('GraphQL Errors:', response.errors);
+            response.errors.forEach((error: any, index: number) => {
+              console.error(`Error ${index + 1}:`, error.message);
+              console.error('Locations:', error.locations);
+              console.error('Path:', error.path);
+            });
+            throw new Error(`GraphQL Error: ${response.errors[0].message}`);
+          }
+
+          if (
+            !response ||
+            !response.data ||
+            !response.data.getAllClientOrders
+          ) {
+            console.error('Invalid GraphQL response:', response);
+            throw new Error('Invalid response from server - no data');
+          }
+          return response.data.getAllClientOrders;
+        }),
+      );
   }
 
-  getClientOrderById(id: string): Observable<ClientOrder> {
-    return this.apollo.query<{ getClientOrderById: ClientOrder }>({
-      query: this.getClientOrderByIdQuery,
-      variables: { id },
-      fetchPolicy: 'network-only'
-    }).pipe(
-      map(response => {
-        if (response.errors && response.errors.length > 0) {
-          console.error('GraphQL Errors:', response.errors);
-          throw new Error(`GraphQL Error: ${response.errors[0].message}`);
-        }
-
-        if (!response || !response.data || !response.data.getClientOrderById) {
-          console.error('Invalid GraphQL response:', response);
-          throw new Error('Invalid response from server - no data');
-        }
-
-        return response.data.getClientOrderById;
+  getClientOrderById(orderId: string): Observable<ClientOrder> {
+    return this.apollo
+      .query<{ getClientOrderById: ClientOrder }>({
+        query: this.getClientOrderByIdQuery,
+        variables: { orderId }, // Utiliser orderId au lieu de id
+        fetchPolicy: 'network-only',
       })
-    );
+      .pipe(
+        map((response) => {
+          if (response.errors && response.errors.length > 0) {
+            console.error('GraphQL Errors:', response.errors);
+            throw new Error(`GraphQL Error: ${response.errors[0].message}`);
+          }
+
+          if (
+            !response ||
+            !response.data ||
+            !response.data.getClientOrderById
+          ) {
+            console.error('Invalid GraphQL response:', response);
+            throw new Error('Invalid response from server - no data');
+          }
+
+          return response.data.getClientOrderById;
+        }),
+      );
   }
 
-  getClientOrdersByStatus(status: string, page?: number, size?: number): Observable<ClientOrderPage> {
-    return this.apollo.query<{ getClientOrdersByStatus: ClientOrderPage }>({
-      query: this.getClientOrdersByStatusQuery,
-      variables: {
-        status,
-        page: page ?? 0,
-        size: size ?? 10
-      },
-      fetchPolicy: 'network-only'
-    }).pipe(
-      map(response => {
-        if (response.errors && response.errors.length > 0) {
-          console.error('GraphQL Errors:', response.errors);
-          throw new Error(`GraphQL Error: ${response.errors[0].message}`);
-        }
-
-        if (!response || !response.data || !response.data.getClientOrdersByStatus) {
-          console.error('Invalid GraphQL response:', response);
-          throw new Error('Invalid response from server - no data');
-        }
-
-        return response.data.getClientOrdersByStatus;
+  updateClientOrder(
+    orderId: string,
+    input: ClientOrderInput,
+  ): Observable<ClientOrder> {
+    return this.apollo
+      .mutate<{ updateClientOrder: ClientOrder }>({
+        mutation: this.updateClientOrderMutation,
+        variables: { orderId, input }, // Utiliser orderId au lieu de id
       })
-    );
+      .pipe(
+        map((response) => {
+          if (!response.data?.updateClientOrder) {
+            throw new Error('Failed to update order');
+          }
+          return response.data.updateClientOrder;
+        }),
+      );
+  }
+
+  getClientOrdersByStatus(
+    status: string,
+    page?: number,
+    size?: number,
+  ): Observable<ClientOrderPage> {
+    return this.apollo
+      .query<{ getClientOrdersByStatus: ClientOrderPage }>({
+        query: this.getClientOrdersByStatusQuery,
+        variables: {
+          status,
+          page: page ?? 0,
+          size: size ?? 10,
+        },
+        fetchPolicy: 'network-only',
+      })
+      .pipe(
+        map((response) => {
+          if (response.errors && response.errors.length > 0) {
+            console.error('GraphQL Errors:', response.errors);
+            throw new Error(`GraphQL Error: ${response.errors[0].message}`);
+          }
+
+          if (
+            !response ||
+            !response.data ||
+            !response.data.getClientOrdersByStatus
+          ) {
+            console.error('Invalid GraphQL response:', response);
+            throw new Error('Invalid response from server - no data');
+          }
+
+          return response.data.getClientOrdersByStatus;
+        }),
+      );
   }
 
   createClientOrder(input: ClientOrderInput): Observable<ClientOrder> {
-    return this.apollo.mutate<{ createClientOrder: ClientOrder }>({
-      mutation: this.createClientOrderMutation,
-      variables: { input }
-    }).pipe(
-      map(response => {
-        if (response.errors && response.errors.length > 0) {
-          console.error('GraphQL Errors:', response.errors);
-          throw new Error(`GraphQL Error: ${response.errors[0].message}`);
-        }
-
-        if (!response || !response.data || !response.data.createClientOrder) {
-          console.error('Invalid GraphQL response:', response);
-          throw new Error('Invalid response from server - no data');
-        }
-
-        return response.data.createClientOrder;
+    return this.apollo
+      .mutate<{ createClientOrder: ClientOrder }>({
+        mutation: this.createClientOrderMutation,
+        variables: { input },
       })
-    );
+      .pipe(
+        map((response) => {
+          if (response.errors && response.errors.length > 0) {
+            console.error('GraphQL Errors:', response.errors);
+            throw new Error(`GraphQL Error: ${response.errors[0].message}`);
+          }
+
+          if (!response || !response.data || !response.data.createClientOrder) {
+            console.error('Invalid GraphQL response:', response);
+            throw new Error('Invalid response from server - no data');
+          }
+
+          return response.data.createClientOrder;
+        }),
+      );
   }
 
-  updateClientOrder(id: string, input: ClientOrderInput): Observable<ClientOrder> {
-    return this.apollo.mutate<{ updateClientOrder: ClientOrder }>({
-      mutation: this.updateClientOrderMutation,
-      variables: { id, input }
-    }).pipe(
-      map(response => {
-        if (response.errors && response.errors.length > 0) {
-          console.error('GraphQL Errors:', response.errors);
-          throw new Error(`GraphQL Error: ${response.errors[0].message}`);
-        }
-
-        if (!response || !response.data || !response.data.updateClientOrder) {
-          console.error('Invalid GraphQL response:', response);
-          throw new Error('Invalid response from server - no data');
-        }
-
-        return response.data.updateClientOrder;
+  cancelClientOrder(orderId: string): Observable<ClientOrder> {
+    return this.apollo
+      .mutate<{ cancelClientOrder: ClientOrder }>({
+        mutation: this.cancelClientOrderMutation,
+        variables: { orderId },
       })
-    );
-  }
-
-  cancelClientOrder(id: string): Observable<ClientOrder> {
-    return this.apollo.mutate<{ cancelClientOrder: ClientOrder }>({
-      mutation: this.cancelClientOrderMutation,
-      variables: { id }
-    }).pipe(
-      map(response => {
-        if (response.errors && response.errors.length > 0) {
-          console.error('GraphQL Errors:', response.errors);
-          throw new Error(`GraphQL Error: ${response.errors[0].message}`);
-        }
-
-        if (!response || !response.data || !response.data.cancelClientOrder) {
-          console.error('Invalid GraphQL response:', response);
-          throw new Error('Invalid response from server - no data');
-        }
-
-        return response.data.cancelClientOrder;
-      })
-    );
+      .pipe(
+        map((response) => {
+          if (!response.data?.cancelClientOrder) {
+            throw new Error('Failed to cancel order');
+          }
+          return response.data.cancelClientOrder;
+        }),
+        catchError((error) => {
+          console.error('Error cancelling order:', error);
+          return throwError(() => error);
+        }),
+      );
   }
 }

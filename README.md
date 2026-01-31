@@ -26,7 +26,7 @@ Avant de commencer, assurez-vous d'avoir installé :
 
 1. Clonez le repository :
 ```bash
-git clone <repository-url>
+git clone MouadHallaffou/supply-chain-client.git
 cd supply-chain-client
 ```
 

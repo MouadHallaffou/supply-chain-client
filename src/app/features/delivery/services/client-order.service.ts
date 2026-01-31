@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Apollo, gql } from 'apollo-angular';
 import { ClientOrder } from '../data/models/client-order.model';
 import { ClientOrderInput } from '../data/models/client-order-input.model';
-import { environment } from '../../../../environments/environment';
 
 interface ClientOrderPage {
   content: ClientOrder[];
@@ -18,20 +17,10 @@ interface ClientOrderPage {
   providedIn: 'root'
 })
 export class ClientOrderService {
-  private graphqlEndpoint = `${environment.graphUrl}`;
-
-  constructor(private http: HttpClient) {}
-
-  // Méthode privée pour construire le corps de la requête GraphQL
-  private createGraphQLRequest(query: string, variables: any): any {
-    return {
-      query,
-      variables
-    };
-  }
+  constructor(private apollo: Apollo) {}
 
   // Requête GraphQL pour obtenir toutes les commandes
-  private getAllClientOrdersQuery = `
+  private getAllClientOrdersQuery = gql`
     query GetAllClientOrders($page: Int, $size: Int, $sortBy: String) {
       getAllClientOrders(page: $page, size: $size, sortBy: $sortBy) {
         content {
@@ -51,7 +40,7 @@ export class ClientOrderService {
   `;
 
   // Requête GraphQL pour obtenir une commande par ID
-  private getClientOrderByIdQuery = `
+  private getClientOrderByIdQuery = gql`
     query GetClientOrderById($id: ID!) {
       getClientOrderById(id: $id) {
         orderId
@@ -65,7 +54,7 @@ export class ClientOrderService {
   `;
 
   // Requête GraphQL pour obtenir les commandes par statut
-  private getClientOrdersByStatusQuery = `
+  private getClientOrdersByStatusQuery = gql`
     query GetClientOrdersByStatus($status: String!, $page: Int!, $size: Int!) {
       getClientOrdersByStatus(status: $status, page: $page, size: $size) {
         content {
@@ -85,7 +74,7 @@ export class ClientOrderService {
   `;
 
   // Mutation GraphQL pour créer une commande
-  private createClientOrderMutation = `
+  private createClientOrderMutation = gql`
     mutation CreateClientOrder($input: ClientOrderInput!) {
       createClientOrder(input: $input) {
         orderId
@@ -99,7 +88,7 @@ export class ClientOrderService {
   `;
 
   // Mutation GraphQL pour mettre à jour une commande
-  private updateClientOrderMutation = `
+  private updateClientOrderMutation = gql`
     mutation UpdateClientOrder($id: ID!, $input: ClientOrderInput!) {
       updateClientOrder(id: $id, input: $input) {
         orderId
@@ -113,7 +102,7 @@ export class ClientOrderService {
   `;
 
   // Mutation GraphQL pour annuler une commande
-  private cancelClientOrderMutation = `
+  private cancelClientOrderMutation = gql`
     mutation CancelClientOrder($id: ID!) {
       cancelClientOrder(id: $id) {
         orderId
@@ -132,12 +121,12 @@ export class ClientOrderService {
     };
 
     console.log('getAllClientOrders - Variables:', variables);
-    console.log('getAllClientOrders - Query:', this.getAllClientOrdersQuery);
 
-    const request = this.createGraphQLRequest(this.getAllClientOrdersQuery, variables);
-    console.log('getAllClientOrders - Request:', request);
-
-    return this.http.post<any>(this.graphqlEndpoint, request).pipe(
+    return this.apollo.query<{ getAllClientOrders: ClientOrderPage }>({
+      query: this.getAllClientOrdersQuery,
+      variables,
+      fetchPolicy: 'network-only'
+    }).pipe(
       map(response => {
         console.log('GraphQL Response:', response);
 
@@ -162,11 +151,12 @@ export class ClientOrderService {
   }
 
   getClientOrderById(id: string): Observable<ClientOrder> {
-    const request = this.createGraphQLRequest(this.getClientOrderByIdQuery, { id });
-
-    return this.http.post<any>(this.graphqlEndpoint, request).pipe(
+    return this.apollo.query<{ getClientOrderById: ClientOrder }>({
+      query: this.getClientOrderByIdQuery,
+      variables: { id },
+      fetchPolicy: 'network-only'
+    }).pipe(
       map(response => {
-        // Vérifier s'il y a des erreurs GraphQL
         if (response.errors && response.errors.length > 0) {
           console.error('GraphQL Errors:', response.errors);
           throw new Error(`GraphQL Error: ${response.errors[0].message}`);
@@ -183,15 +173,16 @@ export class ClientOrderService {
   }
 
   getClientOrdersByStatus(status: string, page?: number, size?: number): Observable<ClientOrderPage> {
-    const request = this.createGraphQLRequest(this.getClientOrdersByStatusQuery, {
-      status,
-      page: page ?? 0,
-      size: size ?? 10
-    });
-
-    return this.http.post<any>(this.graphqlEndpoint, request).pipe(
+    return this.apollo.query<{ getClientOrdersByStatus: ClientOrderPage }>({
+      query: this.getClientOrdersByStatusQuery,
+      variables: {
+        status,
+        page: page ?? 0,
+        size: size ?? 10
+      },
+      fetchPolicy: 'network-only'
+    }).pipe(
       map(response => {
-        // Vérifier s'il y a des erreurs GraphQL
         if (response.errors && response.errors.length > 0) {
           console.error('GraphQL Errors:', response.errors);
           throw new Error(`GraphQL Error: ${response.errors[0].message}`);
@@ -208,11 +199,11 @@ export class ClientOrderService {
   }
 
   createClientOrder(input: ClientOrderInput): Observable<ClientOrder> {
-    const request = this.createGraphQLRequest(this.createClientOrderMutation, { input });
-
-    return this.http.post<any>(this.graphqlEndpoint, request).pipe(
+    return this.apollo.mutate<{ createClientOrder: ClientOrder }>({
+      mutation: this.createClientOrderMutation,
+      variables: { input }
+    }).pipe(
       map(response => {
-        // Vérifier s'il y a des erreurs GraphQL
         if (response.errors && response.errors.length > 0) {
           console.error('GraphQL Errors:', response.errors);
           throw new Error(`GraphQL Error: ${response.errors[0].message}`);
@@ -229,11 +220,11 @@ export class ClientOrderService {
   }
 
   updateClientOrder(id: string, input: ClientOrderInput): Observable<ClientOrder> {
-    const request = this.createGraphQLRequest(this.updateClientOrderMutation, { id, input });
-
-    return this.http.post<any>(this.graphqlEndpoint, request).pipe(
+    return this.apollo.mutate<{ updateClientOrder: ClientOrder }>({
+      mutation: this.updateClientOrderMutation,
+      variables: { id, input }
+    }).pipe(
       map(response => {
-        // Vérifier s'il y a des erreurs GraphQL
         if (response.errors && response.errors.length > 0) {
           console.error('GraphQL Errors:', response.errors);
           throw new Error(`GraphQL Error: ${response.errors[0].message}`);
@@ -250,11 +241,11 @@ export class ClientOrderService {
   }
 
   cancelClientOrder(id: string): Observable<ClientOrder> {
-    const request = this.createGraphQLRequest(this.cancelClientOrderMutation, { id });
-
-    return this.http.post<any>(this.graphqlEndpoint, request).pipe(
+    return this.apollo.mutate<{ cancelClientOrder: ClientOrder }>({
+      mutation: this.cancelClientOrderMutation,
+      variables: { id }
+    }).pipe(
       map(response => {
-        // Vérifier s'il y a des erreurs GraphQL
         if (response.errors && response.errors.length > 0) {
           console.error('GraphQL Errors:', response.errors);
           throw new Error(`GraphQL Error: ${response.errors[0].message}`);
